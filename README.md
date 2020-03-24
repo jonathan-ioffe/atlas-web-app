@@ -6,6 +6,7 @@ Web App for TAU's ATLAS System
 2. Install Github Desktop: https://desktop.github.com/
 3. Install Visual Studio Code: https://code.visualstudio.com/
 4. Install Node.JS: https://nodejs.org/en/
+5. In the root directroy of this project, run: `npm i`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

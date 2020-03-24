@@ -9,7 +9,7 @@ import $ from 'jquery';
 import Navbar from './Navbar';
 
 
-const ATLAS_SERVER_ADDRESS = `${document.location.protocol === "https:" ? "wss" : "ws"}://atlas-server.cs.tau.ac.il:6789`;
+const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
 
 
 class App extends Component {
@@ -21,15 +21,15 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // const {wsConnection} = this.state;
-    // wsConnection.onopen = () => {
-    //   console.log('connected');
+    const {wsConnection} = this.state;
+    wsConnection.onopen = () => {
+      console.log('connected');
       
-    // }
-    // wsConnection.onerror = (err) => {
-    //   console.error(err);
+    }
+    wsConnection.onerror = (err) => {
+      console.error(err);
       
-    // }
+    }
   }
 
   render() {
