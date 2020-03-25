@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { connectToWebSocket } from "../helpers/webSocket";
 import '../styles/App.css';
 import "../styles/bootstrap.min.css";
 import "../styles/open-iconic-bootstrap.min.css";
@@ -16,40 +16,35 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      wsConnection: new WebSocket(ATLAS_SERVER_ADDRESS, "json")
+      wsConnection: new WebSocket(ATLAS_SERVER_ADDRESS, "json"),
+      msgArray: []
     }
   }
 
   componentDidMount() {
     const {wsConnection} = this.state;
-    wsConnection.onopen = () => {
-      console.log('connected');
-      
-    }
-    wsConnection.onerror = (err) => {
-      console.error(err);
-      
-    }
+    connectToWebSocket(wsConnection);
+
+    wsConnection.onmessage = evt => {
+      // listen to data sent from the websocket server
+      const message = JSON.parse(evt.data)
+      this.setState({dataFromServer: message})
+      console.log(message)
+      }
+
+      wsConnection.onclose = () => {
+      console.log('disconnected')
+      // automatically try to reconnect on connection loss
+
+      }
   }
 
   render() {
     return (
       <>
-      <Navbar />
-      <div className="App">
-        <header className="App-header">
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <Navbar x="a" />
+      <div>
+        ssss
       </div>
     </>
     );
