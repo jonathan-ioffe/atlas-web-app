@@ -8,7 +8,7 @@ class Navbar extends Component {
     render() {
         return (
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-            <button className="navbar-brand btn btn-link">ATLAS Web App {this.props.x}</button>
+            <button className="navbar-brand btn btn-link">ATLAS Web App</button>
             </nav>
         );
     }
