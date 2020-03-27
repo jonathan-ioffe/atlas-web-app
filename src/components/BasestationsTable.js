@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/no-more-tables.css';
 import {BasestationRow} from './BasestationRow';
 
 let  compareStringsAsNumber = (a, b) => {
@@ -16,7 +17,8 @@ function BasestationsTable(props) {
         {Object.keys(base_station_to_info).length <= 0
         ? <p className="text-center">No available base stations readings!</p>
         :
-        <table className="table table-striped table table-bordered table-hover">
+        <table className="table-striped table-hover">
+        {/* <table className="table table-striped table-bordered table-hover"> */}
             <thead>
               <tr>
               <th scope="col">Base Station #</th>
