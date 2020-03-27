@@ -5,7 +5,7 @@ import "../styles/open-iconic-bootstrap.min.css";
 
 import 'bootstrap';
 import $ from 'jquery';
-import Navbar from './Navbar';
+import {Navbar} from './Navbar';
 
 
 const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
@@ -104,4 +104,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export {App};
