@@ -60,7 +60,7 @@ class App extends Component {
         console.log(`Localization: ${JSON.stringify(msg)}`);
       }
       else if (msg.class === "tau.atlas.messages.DetectionMessage") {
-        let curr_basestation = msg.basestation;
+        let curr_basestation = Number(msg.basestation);
         const {basestation, ...relevant_fields} = msg;
         // console.log(`Detection message for station ${curr_basestation}`)
         base_station_to_info[curr_basestation] = relevant_fields;
@@ -98,7 +98,9 @@ class App extends Component {
     return (
       <>
       <Navbar />
-      <BasestationsTable base_station_to_info={base_station_to_info} />
+      <div className="m-3">
+        <BasestationsTable base_station_to_info={base_station_to_info} />
+      </div>
     </>
     );
   }
