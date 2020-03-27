@@ -45,5 +45,4 @@ function BasestationsTable(props) {
     );
 }
 
-
 export {BasestationsTable};
