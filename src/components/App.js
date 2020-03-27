@@ -6,6 +6,7 @@ import "../styles/open-iconic-bootstrap.min.css";
 import 'bootstrap';
 import $ from 'jquery';
 import {Navbar} from './Navbar';
+import { BasestationsTable } from './BasestationsTable';
 
 
 const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
@@ -61,7 +62,7 @@ class App extends Component {
       else if (msg.class === "tau.atlas.messages.DetectionMessage") {
         let curr_basestation = msg.basestation;
         const {basestation, ...relevant_fields} = msg;
-        console.log(`Detection message for station ${curr_basestation}`)
+        // console.log(`Detection message for station ${curr_basestation}`)
         base_station_to_info[curr_basestation] = relevant_fields;
         this.setState({base_station_to_info: base_station_to_info});
       }
@@ -93,12 +94,11 @@ class App extends Component {
 
 
   render() {
+    const {base_station_to_info} = this.state;
     return (
       <>
       <Navbar />
-      <div>
-        ssss
-      </div>
+      <BasestationsTable base_station_to_info={base_station_to_info} />
     </>
     );
   }
