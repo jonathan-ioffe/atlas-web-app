@@ -3,6 +3,7 @@ import '../styles/App.css';
 import "../styles/bootstrap.min.css";
 import "../styles/open-iconic-bootstrap.min.css";
 
+import "popper.js";
 import 'bootstrap';
 import $ from 'jquery';
 import {Navbar} from './Navbar';
@@ -10,6 +11,11 @@ import { BasestationsTable } from './BasestationsTable';
 
 
 const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
+const CONNECTION_MSG_CLASS_NAME = "tau.atlas.messages.ConsumerConnectionState";
+const LOCALIZATION_MSG_CLASS_NAME = "tau.atlas.messages.LocalizationMessage";
+const DETECTION_MSG_CLASS_NAME = "tau.atlas.messages.DetectionMessage";
+
+const LAST_UPDATED_KEY = "last_updated";
 
 
 class App extends Component {
@@ -17,7 +23,9 @@ class App extends Component {
     super();
     this.state = {
       ws_connection: null,
-      base_station_to_info: {}
+      base_station_to_info: {},
+      detected_base_stations: [],
+      tag_to_detections: {}
     }
   }
 
@@ -25,6 +33,9 @@ class App extends Component {
 
   componentDidMount() {
     this.connect();
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
   }
 
   /**
@@ -33,7 +44,7 @@ class App extends Component {
    * With the help of the following article: https://dev.to/finallynero/using-websockets-in-react-4fkp
    */
   connect = () => {
-    const {base_station_to_info} = this.state;
+    const {base_station_to_info, tag_to_detections, detected_base_stations} = this.state;
     let ws_connection = new WebSocket(ATLAS_SERVER_ADDRESS, "json");
     let that = this; // cache the this
     var connectInterval;
@@ -42,7 +53,7 @@ class App extends Component {
     ws_connection.onopen = () => {
       console.log('SUCCESS connecting WebSocket');
       let msg = JSON.stringify({
-        class: "tau.atlas.messages.ConsumerConnectionState",
+        class: CONNECTION_MSG_CLASS_NAME,
         name: "transient",
       });
       console.log(`Sending: ${msg}`);
@@ -56,15 +67,32 @@ class App extends Component {
     ws_connection.onmessage = evt => {
       // listen to data sent from the websocket server
       const msg = JSON.parse(evt.data);
-      if (msg.class === "tau.atlas.messages.LocalizationMessage") {
+      if (msg.class === LOCALIZATION_MSG_CLASS_NAME) {
         console.log(`Localization: ${JSON.stringify(msg)}`);
       }
-      else if (msg.class === "tau.atlas.messages.DetectionMessage") {
-        let curr_basestation = Number(msg.basestation);
-        const {basestation, ...relevant_fields} = msg;
+      else if (msg.class === DETECTION_MSG_CLASS_NAME) {
+        const {tagUid, basestation, time, gain, ...non_relevant_fields} = msg;
+        let curr_base_station = Number(basestation);
+        let curr_info = {gain: gain, detection_time: time};
+
         // console.log(`Detection message for station ${curr_basestation}`)
-        base_station_to_info[curr_basestation] = relevant_fields;
+        base_station_to_info[curr_base_station] = non_relevant_fields;
         this.setState({base_station_to_info: base_station_to_info});
+        
+        if (!detected_base_stations.includes(curr_base_station)) {
+          detected_base_stations.push(curr_base_station);
+        }
+
+        if (tag_to_detections.hasOwnProperty(tagUid)) {
+          tag_to_detections[tagUid][curr_base_station] = curr_info;
+          tag_to_detections[tagUid][LAST_UPDATED_KEY] = time;
+        }
+        else {
+          tag_to_detections[tagUid] = {};
+          tag_to_detections[tagUid][curr_base_station] = curr_info;
+          tag_to_detections[tagUid][LAST_UPDATED_KEY] = time;
+        }
+        this.setState({detected_base_stations: detected_base_stations, tag_to_detections: tag_to_detections});
       }
       
     }
@@ -94,12 +122,16 @@ class App extends Component {
 
 
   render() {
-    const {base_station_to_info} = this.state;
+    const {base_station_to_info, detected_base_stations, tag_to_detections} = this.state;
     return (
       <>
       <Navbar />
       <div className="m-3">
-        <BasestationsTable base_station_to_info={base_station_to_info} />
+        <BasestationsTable 
+          base_station_to_info={base_station_to_info}
+          detected_base_stations={detected_base_stations}
+          tag_to_detections={tag_to_detections}
+        />
       </div>
     </>
     );
