@@ -12,10 +12,10 @@ let  compareStringsAsNumber = (a, b) => {
 
 
 let BasestationsTable = (props) => {
-    const {base_station_to_info, detected_base_stations, tag_to_detections} = props;
+    const {baseStationToInfo, detectedBaseStations, tagToDetections} = props;
     // return (
     //     <>
-    //     {Object.keys(base_station_to_info).length <= 0
+    //     {Object.keys(baseStationToInfo).length <= 0
     //     ? <p className="text-center">No available base stations readings!</p>
     //     :
     //     <table className="table-striped table-hover">
@@ -32,11 +32,11 @@ let BasestationsTable = (props) => {
     //           </tr>
     //         </thead>
     //         <tbody>
-    //             {Object.keys(base_station_to_info).sort(compareStringsAsNumber).map(basestation_num => (
+    //             {Object.keys(baseStationToInfo).sort(compareStringsAsNumber).map(baseStationNum => (
     //                 <BasestationRow
-    //                     key={`${basestation_num}`}
-    //                     basestation_num={basestation_num} 
-    //                     basestation_info={base_station_to_info[basestation_num]}
+    //                     key={`${baseStationNum}`}
+    //                     baseStationNum={baseStationNum} 
+    //                     baseStationInfo={baseStationToInfo[baseStationNum]}
     //                 />
     //             ))}
     //         </tbody>
@@ -47,7 +47,7 @@ let BasestationsTable = (props) => {
 
     return (
         <>
-        {Object.keys(base_station_to_info).length <= 0
+        {Object.keys(baseStationToInfo).length <= 0
         ? <p className="text-center">No available base stations readings!</p>
         :
         <table className="table-striped table-hover">
@@ -56,18 +56,18 @@ let BasestationsTable = (props) => {
               <tr>
                 <th scope="col">Tag ID</th>
                 <th scope="col">Last Detection</th>
-                  {detected_base_stations.sort(compareStringsAsNumber).map(basestation_num => (
-                      <th scope="col" key={basestation_num}>{basestation_num}</th>
+                  {detectedBaseStations.sort(compareStringsAsNumber).map(baseStationNum => (
+                      <th scope="col" key={baseStationNum}>{baseStationNum}</th>
                   ))}
               </tr>
             </thead>
             <tbody>
-                {Object.keys(tag_to_detections).sort(compareStringsAsNumber).map(tag_id => (
+                {Object.keys(tagToDetections).sort(compareStringsAsNumber).map(tagId => (
                     <TagDetectionRow
-                        key={tag_id}
-                        tag_id={tag_id} 
-                        base_station_to_info={tag_to_detections[tag_id]}
-                        base_stations_list={detected_base_stations}
+                        key={tagId}
+                        tagId={tagId} 
+                        baseStationToInfo={tagToDetections[tagId]}
+                        baseStationsList={detectedBaseStations}
                     />
                 ))}
             </tbody>

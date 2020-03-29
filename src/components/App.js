@@ -6,7 +6,7 @@ import "../styles/open-iconic-bootstrap.min.css";
 import "popper.js";
 import 'bootstrap';
 import $ from 'jquery';
-import {Navbar} from './Navbar';
+import { Navbar } from './Navbar';
 import { BasestationsTable } from './BasestationsTable';
 
 
@@ -15,17 +15,17 @@ const CONNECTION_MSG_CLASS_NAME = "tau.atlas.messages.ConsumerConnectionState";
 const LOCALIZATION_MSG_CLASS_NAME = "tau.atlas.messages.LocalizationMessage";
 const DETECTION_MSG_CLASS_NAME = "tau.atlas.messages.DetectionMessage";
 
-const LAST_UPDATED_KEY = "last_updated";
+const LAST_UPDATED_KEY = "lastUpdated";
 
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      ws_connection: null,
-      base_station_to_info: {},
-      detected_base_stations: [],
-      tag_to_detections: {}
+      wsConnection: null,
+      baseStationToInfo: {},
+      detectedBaseStations: [],
+      tagToDetections: {}
     }
   }
 
@@ -44,61 +44,65 @@ class App extends Component {
    * With the help of the following article: https://dev.to/finallynero/using-websockets-in-react-4fkp
    */
   connect = () => {
-    const {base_station_to_info, tag_to_detections, detected_base_stations} = this.state;
-    let ws_connection = new WebSocket(ATLAS_SERVER_ADDRESS, "json");
+    const {baseStationToInfo, tagToDetections, detectedBaseStations} = this.state;
+    let wsConnection = new WebSocket(ATLAS_SERVER_ADDRESS, "json");
     let that = this; // cache the this
     var connectInterval;
 
     // websocket onopen event listener
-    ws_connection.onopen = () => {
+    wsConnection.onopen = () => {
       console.log('SUCCESS connecting WebSocket');
       let msg = JSON.stringify({
         class: CONNECTION_MSG_CLASS_NAME,
         name: "transient",
       });
       console.log(`Sending: ${msg}`);
-      ws_connection.send(msg);
-      this.setState({ ws_connection: ws_connection });
+      wsConnection.send(msg);
+      this.setState({ wsConnection: wsConnection });
 
       that.timeout = 250; // reset timer to 250 on open of websocket connection 
       clearTimeout(connectInterval); // clear Interval on on open of websocket connection
     };
 
-    ws_connection.onmessage = evt => {
+    wsConnection.onmessage = evt => {
       // listen to data sent from the websocket server
       const msg = JSON.parse(evt.data);
       if (msg.class === LOCALIZATION_MSG_CLASS_NAME) {
-        console.log(`Localization: ${JSON.stringify(msg)}`);
+        // console.log(`Localization: ${JSON.stringify(msg)}`);
       }
       else if (msg.class === DETECTION_MSG_CLASS_NAME) {
-        const {tagUid, basestation, time, gain, ...non_relevant_fields} = msg;
-        let curr_base_station = Number(basestation);
-        let curr_info = {gain: gain, detection_time: time};
+        const {tagUid, basestation, time, snr, ...nonRelevantFields} = msg;
+        let currBaseStation = Number(basestation);
+        let currInfo = {snr: Number(snr).toFixed(2), detectionTime: time};
 
-        // console.log(`Detection message for station ${curr_basestation}`)
-        base_station_to_info[curr_base_station] = non_relevant_fields;
-        this.setState({base_station_to_info: base_station_to_info});
+        // console.log(`Detection message for station ${currBaseStation}`)
+        baseStationToInfo[currBaseStation] = nonRelevantFields;
+        this.setState({baseStationToInfo: baseStationToInfo});
         
-        if (!detected_base_stations.includes(curr_base_station)) {
-          detected_base_stations.push(curr_base_station);
+        if (!detectedBaseStations.includes(currBaseStation)) {
+          detectedBaseStations.push(currBaseStation);
         }
 
-        if (tag_to_detections.hasOwnProperty(tagUid)) {
-          tag_to_detections[tagUid][curr_base_station] = curr_info;
-          tag_to_detections[tagUid][LAST_UPDATED_KEY] = time;
+        if (tagToDetections.hasOwnProperty(tagUid)) {
+          tagToDetections[tagUid][currBaseStation] = currInfo;
+          tagToDetections[tagUid][LAST_UPDATED_KEY] = time;
         }
         else {
-          tag_to_detections[tagUid] = {};
-          tag_to_detections[tagUid][curr_base_station] = curr_info;
-          tag_to_detections[tagUid][LAST_UPDATED_KEY] = time;
+          tagToDetections[tagUid] = {};
+          tagToDetections[tagUid][currBaseStation] = currInfo;
+          tagToDetections[tagUid][LAST_UPDATED_KEY] = time;
         }
-        this.setState({detected_base_stations: detected_base_stations, tag_to_detections: tag_to_detections});
+        this.setState({detectedBaseStations: detectedBaseStations, tagToDetections: tagToDetections});
+      }
+      else {
+        console.log(msg);
+        
       }
       
     }
 
     // websocket onclose event listener
-    ws_connection.onclose = e => {
+    wsConnection.onclose = e => {
       console.log(
         `Connection to ATLAS server closed. Reconnect will be attempted in ${Math.min(10000 / 1000, (that.timeout + that.timeout) / 1000)} seconds`,
         e.reason
@@ -109,28 +113,28 @@ class App extends Component {
     };
 
     // websocket onerror event listener
-    ws_connection.onerror = err => {
+    wsConnection.onerror = err => {
       console.error(
           "Socket encountered error: ",
           err.message,
           "Closing socket"
       );
 
-      ws_connection.close();
+      wsConnection.close();
     };
   };
 
 
   render() {
-    const {base_station_to_info, detected_base_stations, tag_to_detections} = this.state;
+    const {baseStationToInfo, detectedBaseStations, tagToDetections} = this.state;
     return (
       <>
       <Navbar />
       <div className="m-3">
         <BasestationsTable 
-          base_station_to_info={base_station_to_info}
-          detected_base_stations={detected_base_stations}
-          tag_to_detections={tag_to_detections}
+          baseStationToInfo={baseStationToInfo}
+          detectedBaseStations={detectedBaseStations}
+          tagToDetections={tagToDetections}
         />
       </div>
     </>
