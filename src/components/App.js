@@ -11,7 +11,7 @@ import { BasestationsTable } from './BasestationsTable';
 
 
 const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
-const CONNECTION_MSG_CLASS_NAME = "tau.atlas.messages.ConsumerConnectionState";
+const CONNECTION_MSG_CLASS_NAME = "tau.atlas.messages.ConsumerConnectionStateExtended";
 const LOCALIZATION_MSG_CLASS_NAME = "tau.atlas.messages.LocalizationMessage";
 const DETECTION_MSG_CLASS_NAME = "tau.atlas.messages.DetectionMessage";
 
@@ -55,6 +55,7 @@ class App extends Component {
       let msg = JSON.stringify({
         class: CONNECTION_MSG_CLASS_NAME,
         name: "transient",
+        request: "WGS84"
       });
       console.log(`Sending: ${msg}`);
       wsConnection.send(msg);
@@ -68,7 +69,7 @@ class App extends Component {
       // listen to data sent from the websocket server
       const msg = JSON.parse(evt.data);
       if (msg.class === LOCALIZATION_MSG_CLASS_NAME) {
-        // console.log(`Localization: ${JSON.stringify(msg)}`);
+        console.log(`Localization: ${JSON.stringify(msg)}`);
       }
       else if (msg.class === DETECTION_MSG_CLASS_NAME) {
         const {tagUid, basestation, time, snr, ...nonRelevantFields} = msg;
