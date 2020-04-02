@@ -12,7 +12,7 @@ import { DetectionsTable } from './DetectionsTable';
 
 import 'ol/ol.css';
 import {Map, View, Feature} from 'ol';
-import {Fill, Stroke, Circle, Style} from 'ol/style';
+import {Fill, Stroke, Circle, Style, Text} from 'ol/style';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import TileLayer from 'ol/layer/Tile';
@@ -56,6 +56,15 @@ class App extends Component<{}, IAppState> {
         fill: new Fill({
           color: '#C62148'
         })
+      }),
+      text: new Text({
+        text: "Hello",
+        scale: 1.3,
+        fill: new Fill({
+          color: '#000000'
+        }),
+        textBaseline: "bottom",
+        offsetY: -10
       })
     })
   });
