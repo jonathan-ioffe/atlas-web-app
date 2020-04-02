@@ -1,9 +1,10 @@
 import React from 'react';
 import '../styles/no-more-tables.css';
-import {BasestationRow} from './BasestationRow';
+import { BaseStationRow } from './BasestationRow';
 import { TagDetectionRow } from './TagDetectionRow';
+import { IDetectionsTableProps } from '../interfaces/IDetectionsTableProps';
 
-let  compareStringsAsNumber = (a, b) => {
+let  compareStringsAsNumber = (a: string, b: string) => {
     if (Number(a) < Number(b)) {
         return -1;
     }
@@ -11,7 +12,7 @@ let  compareStringsAsNumber = (a, b) => {
 }
 
 
-let BasestationsTable = (props) => {
+let DetectionsTable = (props: IDetectionsTableProps) => {
     const {baseStationToInfo, detectedBaseStations, tagToDetections} = props;
     // return (
     //     <>
@@ -56,7 +57,7 @@ let BasestationsTable = (props) => {
               <tr>
                 <th scope="col">Tag ID</th>
                 <th scope="col">Last Detection</th>
-                  {detectedBaseStations.sort(compareStringsAsNumber).map(baseStationNum => (
+                  {detectedBaseStations.sort(compareStringsAsNumber).map((baseStationNum: any) => (
                       <th scope="col" key={baseStationNum}>{baseStationNum}</th>
                   ))}
               </tr>
@@ -65,7 +66,7 @@ let BasestationsTable = (props) => {
                 {Object.keys(tagToDetections).sort(compareStringsAsNumber).map(tagId => (
                     <TagDetectionRow
                         key={tagId}
-                        tagId={tagId} 
+                        tagId={Number(tagId)} 
                         baseStationToInfo={tagToDetections[tagId]}
                         baseStationsList={detectedBaseStations}
                     />
@@ -77,4 +78,4 @@ let BasestationsTable = (props) => {
     );
 }
 
-export {BasestationsTable};
+export {DetectionsTable};

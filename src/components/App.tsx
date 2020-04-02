@@ -7,7 +7,7 @@ import "popper.js";
 import 'bootstrap';
 import $ from 'jquery';
 import { Navbar } from './Navbar';
-import { BasestationsTable } from './BasestationsTable';
+import { DetectionsTable } from './DetectionsTable';
 
 
 import 'ol/ol.css';
@@ -19,6 +19,7 @@ import TileLayer from 'ol/layer/Tile';
 import Point from 'ol/geom/Point';
 
 import OSM from 'ol/source/OSM';
+import { IAppState } from '../interfaces/IAppState';
 
 const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
 const CONNECTION_MSG_CLASS_NAME = "tau.atlas.messages.ConsumerConnectionStateExtended";
@@ -28,51 +29,49 @@ const DETECTION_MSG_CLASS_NAME = "tau.atlas.messages.DetectionMessage";
 const LAST_UPDATED_KEY = "lastUpdated";
 
 
-class App extends Component {
-  constructor() {
-    super();
+class App extends Component<{}, IAppState> {
+  constructor(props: {}) {
+    super(props);
     this.state = {
       wsConnection: null,
       baseStationToInfo: {},
       detectedBaseStations: [],
       tagToDetections: {}
     }
-
-    const osmLayer = new TileLayer({source: new OSM()})
-    const featureLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [new Feature({
-          geometry: new Point([
-            35.7489906,
-            33.1072795
-          ])
-        })]
-      }),
-      style: new Style({
-        image: new Circle({
-          radius: 10,
-          fill: new Fill({
-            color: '#C62148'
-          })
-        })
-      })
-    });
-
-    this.mapDivId = `map-${Math.random()}`;
-    this.map = new Map({
-      target: 'map',
-      layers: [
-        osmLayer,
-        featureLayer
-      ],
-      view: new View({
-        projection: 'EPSG:4326',
-        center: [35.7489906, 33.1072795],
-        zoom: 12
-      })
-    });
   }
 
+  osmLayer = new TileLayer({source: new OSM()});
+  featureLayer = new VectorLayer({
+    source: new VectorSource({
+      features: [new Feature({
+        geometry: new Point([
+          35.7489906,
+          33.1072795
+        ])
+      })]
+    }),
+    style: new Style({
+      image: new Circle({
+        radius: 10,
+        fill: new Fill({
+          color: '#C62148'
+        })
+      })
+    })
+  });
+  mapDivId = `map-${Math.random()}`;
+  map = new Map({
+    target: 'map',
+    layers: [
+      this.osmLayer,
+      this.featureLayer
+    ],
+    view: new View({
+      projection: 'EPSG:4326',
+      center: [35.7489906, 33.1072795],
+      zoom: 12
+    })
+  });
   timeout = 250; // Initial timeout duration as a class variable
 
   componentDidMount() {
@@ -84,6 +83,14 @@ class App extends Component {
   }
 
   /**
+   * utilited by the @function connect to check if the connection is close, if so attempts to reconnect
+    */
+  check = () => {
+    const { wsConnection } = this.state;
+    if (!wsConnection || wsConnection.readyState === WebSocket.CLOSED) this.connect(); //check if websocket instance is closed, if so call `connect` function.
+  };
+
+  /**
    * @function connect
    * This function establishes the connect with the websocket and also ensures constant reconnection if connection closes
    * With the help of the following article: https://dev.to/finallynero/using-websockets-in-react-4fkp
@@ -92,7 +99,7 @@ class App extends Component {
     const {baseStationToInfo, tagToDetections, detectedBaseStations} = this.state;
     let wsConnection = new WebSocket(ATLAS_SERVER_ADDRESS, "json");
     let that = this; // cache the this
-    var connectInterval;
+    let connectInterval: any;
 
     // websocket onopen event listener
     wsConnection.onopen = () => {
@@ -162,7 +169,7 @@ class App extends Component {
     wsConnection.onerror = err => {
       console.error(
           "Socket encountered error: ",
-          err.message,
+          err.returnValue,
           "Closing socket"
       );
 
@@ -178,7 +185,7 @@ class App extends Component {
       <Navbar />
         <div className="row">
           <div className="col-6 col-xs-2 mr-auto">
-            <BasestationsTable 
+            <DetectionsTable 
               baseStationToInfo={baseStationToInfo}
               detectedBaseStations={detectedBaseStations}
               tagToDetections={tagToDetections}

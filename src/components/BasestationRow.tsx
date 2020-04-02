@@ -1,7 +1,8 @@
 import React from 'react';
+import { IBaseStationRowProps } from '../interfaces/ITableRowProps';
 
 
-function BasestationRow(props) {
+let BaseStationRow = (props: IBaseStationRowProps) => {
     const {baseStationNum, baseStationInfo} = props;
     return (
         <tr>
@@ -17,4 +18,4 @@ function BasestationRow(props) {
 }
 
 
-export {BasestationRow};
+export {BaseStationRow};

@@ -1,10 +1,11 @@
 import React from 'react';
+import { ITagDetectionRowProps } from '../interfaces/ITableRowProps';
 
 
-let TagDetectionRow = (props) => {
+let TagDetectionRow = (props: ITagDetectionRowProps) => {
     const {tagId, baseStationToInfo, baseStationsList} = props;
-    let lastUpdateTime = (Date.now()/1000) - baseStationToInfo.lastUpdated;
-    lastUpdateTime = lastUpdateTime.toFixed(0);
+    let lastUpdateTime: Number = (Date.now()/1000) - baseStationToInfo.lastUpdated;
+    lastUpdateTime = Number(lastUpdateTime.toFixed(0));
     return (
         <tr>
             <td data-title="Tag ID">{tagId}</td>
