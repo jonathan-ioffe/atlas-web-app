@@ -4,7 +4,7 @@ import { ITagDetectionRowProps } from '../interfaces/ITableRowProps';
 
 let TagDetectionRow = (props: ITagDetectionRowProps) => {
     const {tagId, baseStationToInfo, baseStationsList} = props;
-    let lastUpdateTime: Number = (Date.now()/1000) - baseStationToInfo.lastUpdated;
+    let lastUpdateTime: Number = (Date.now()/1000) - baseStationToInfo[baseStationToInfo.length - 1].lastUpdated;
     lastUpdateTime = Number(lastUpdateTime.toFixed(0));
     return (
         <tr>
@@ -18,9 +18,13 @@ let TagDetectionRow = (props: ITagDetectionRowProps) => {
                 >{baseStationToInfo[baseStationNum] ? baseStationToInfo[baseStationNum].snr : " "}</td>
             ))} */}
             <td>
-            {baseStationsList.map(baseStationNum => (
-                baseStationToInfo[baseStationNum] ? `${baseStationNum}-${baseStationToInfo[baseStationNum].snr}` : ""
+            {baseStationToInfo.map((item: any) => (
+        
+                `${item.baseStationNum} - ${item.lastUpdated} |`
             ))}
+            {/* {baseStationsList.map(baseStationNum => (
+                baseStationToInfo[baseStationNum] ? `${baseStationNum}-${baseStationToInfo[baseStationNum].snr}` : ""
+            ))} */}
             </td>
         </tr>
     );
