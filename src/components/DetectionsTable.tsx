@@ -57,9 +57,10 @@ let DetectionsTable = (props: IDetectionsTableProps) => {
               <tr>
                 <th scope="col">Tag ID</th>
                 <th scope="col">Last Detection</th>
-                  {detectedBaseStations.sort(compareStringsAsNumber).map((baseStationNum: any) => (
+                  {/* {detectedBaseStations.sort(compareStringsAsNumber).map((baseStationNum: any) => (
                       <th scope="col" key={baseStationNum}>{baseStationNum}</th>
-                  ))}
+                  ))} */}
+                <th scope="col">Detections</th>
               </tr>
             </thead>
             <tbody>
