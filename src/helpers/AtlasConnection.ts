@@ -1,25 +1,22 @@
 import { BaseStationStructure } from './../interfaces/BaseStationsStructure';
-import { SystemStructureMessage } from './../interfaces/AtlasMessagesStructure';
-import { IAppState } from './../interfaces/IAppState';
+import { SystemStructureMessage, UserAuthenticationRequest, UserAuthenticationResponse } from './../interfaces/AtlasMessagesStructure';
+import { AppState } from '../interfaces/AppState';
 import { WebSocketConnection } from "./WebSocketConnection";
+import { getCenterOfBaseStations, getFeaturesListOfBaseStations } from './MapUtils';
+import { AtlasServerAddress, MessageClassName } from '../constants/AtlasConstants';
 
-const ATLAS_SERVER_ADDRESS = `wss://atlas-server.cs.tau.ac.il:6789`;
-const CONNECTION_MSG_CLASS_NAME = "tau.atlas.messages.ConsumerConnectionStateExtended";
-const LOCALIZATION_MSG_CLASS_NAME = "tau.atlas.messages.LocalizationMessage";
-const DETECTION_MSG_CLASS_NAME = "tau.atlas.messages.DetectionMessage";
-const TAG_SUMAMRY_MSG_CLASS_NAME = "tau.atlas.messages.TagSummaryMessage";
-const SYSTEM_STRUCTURE_MSG_CLASS_NAME = "tau.atlas.messages.SystemStructureMessage"; // WGS82 base stations coordinates
-const GPS_LOCALIZATION_MSG_CLASS_NAME = "tau.atlas.messages.GPSLocalizationMessage"; 
+
 const LAST_UPDATED_KEY = "lastUpdated";
 
 class AtlasConnection {
     private _connectionObject: WebSocketConnection
-    private _setStateByKey: (key: keyof IAppState, value: any) => void
-    private _getStateByKey: (key: keyof IAppState) => any
+    private _setStateByKey: (key: keyof AppState, value: any) => void
+    private _getStateByKey: (key: keyof AppState) => any
+    private _setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void
 
     onConnectionOpen = () => {
         let msg = JSON.stringify({
-            class: CONNECTION_MSG_CLASS_NAME,
+            class: MessageClassName.Connection,
             name: "transient",
             request: "WGS84"
         });
@@ -29,12 +26,12 @@ class AtlasConnection {
     receiveMessage = (evt: MessageEvent) => {
         // listen to data sent from the websocket server
         const msg = JSON.parse(evt.data);
-        if (msg.class === LOCALIZATION_MSG_CLASS_NAME) {
+        if (msg.class === MessageClassName.Localization) {
             // console.log(`Localization: ${JSON.stringify(msg)}`);
             // console.log(msg.x)
             // console.log(msg.y)
         }
-        else if (msg.class === DETECTION_MSG_CLASS_NAME) {
+        else if (msg.class === MessageClassName.Detection) {
             let baseStationToInfo = this._getStateByKey("baseStationToInfo");
             let detectedBaseStations = this._getStateByKey("detectedBaseStations");
             let tagToDetections = this._getStateByKey("tagToDetections");
@@ -63,7 +60,7 @@ class AtlasConnection {
                 let baseStationAlreadyExists = false;
                 for (let i = 0; i < tagToDetections[tagUid].length; i++) {
                     const element = tagToDetections[tagUid][i];
-                    if (element["baseStationNum"] == currBaseStationDoc["baseStationNum"]) {
+                    if (element["baseStationNum"] === currBaseStationDoc["baseStationNum"]) {
                         tagToDetections[tagUid][i] = currBaseStationDoc;
                         baseStationAlreadyExists = true;
                         break;
@@ -83,7 +80,7 @@ class AtlasConnection {
             this._setStateByKey("tagToDetections", tagToDetections);
 
         }
-        else if (msg.class === SYSTEM_STRUCTURE_MSG_CLASS_NAME) {
+        else if (msg.class === MessageClassName.SystemStructure) {
             const systemStructureMsg = msg as SystemStructureMessage;
             let baseStationsStructure: BaseStationStructure[] = [];
             for (let i = 0; i < systemStructureMsg.basestationIds.length; i++) {
@@ -98,17 +95,35 @@ class AtlasConnection {
 
                 baseStationsStructure.push(currBaseStationStructure);
             }
-            this._setStateByKey("baseStationsStructure", baseStationsStructure);
+            this._setStateByKey("baseStationsFeatures", getFeaturesListOfBaseStations(baseStationsStructure));
+            this._setStateByKey("baseStationsCenter", getCenterOfBaseStations(baseStationsStructure))
         }
-        else if (msg.class !== TAG_SUMAMRY_MSG_CLASS_NAME && msg.class !== GPS_LOCALIZATION_MSG_CLASS_NAME) {
-            console.log(msg);
+        else if (msg.class === MessageClassName.UserAuthResponse) {
+            const userAuthResponseMsg = msg as UserAuthenticationResponse;
+            if (userAuthResponseMsg.verified) {
+                this._setUserAuthCookie({
+                    email: userAuthResponseMsg.email,
+                    googleTokenId: null,
+                    signature: userAuthResponseMsg.signature
+                })
+                this._setStateByKey("isLoggedIn", true);
+            }
+        }
+        else if (msg.class !== MessageClassName.TagSummary && msg.class !== MessageClassName.GpsLocalization) {
+            console.debug(`Received: ${JSON.stringify(msg)}`);
         }
     }
 
-    constructor(setStateByKey: (key: keyof IAppState, value: any) => void, getStateByKey: (key: keyof IAppState) => any) {
-        this._connectionObject = new WebSocketConnection(ATLAS_SERVER_ADDRESS, this.onConnectionOpen, this.receiveMessage);
+    authenticateUser(authRequest: UserAuthenticationRequest) {
+        let msg = JSON.stringify({class: MessageClassName.UserAuthRequest, ...authRequest});
+        this._connectionObject.sendMessage(msg);
+    }
+
+    constructor(setStateByKey: (key: keyof AppState, value: any) => void, getStateByKey: (key: keyof AppState) => any, setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void) {
+        this._connectionObject = new WebSocketConnection(AtlasServerAddress, this.onConnectionOpen, this.receiveMessage);
         this._setStateByKey = setStateByKey;
         this._getStateByKey = getStateByKey;
+        this._setUserAuthCookie = setUserAuthCookie;
     }
 }
 

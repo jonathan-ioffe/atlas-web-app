@@ -1,9 +1,9 @@
 import React from 'react';
-import { ITagDetectionRowProps } from '../interfaces/ITableRowProps';
+import { TagDetectionRowProps } from '../interfaces/TableRowProps';
 
 
-let TagDetectionRow = (props: ITagDetectionRowProps) => {
-    const {tagId, baseStationToInfo, baseStationsList} = props;
+let TagDetectionRow = (props: TagDetectionRowProps) => {
+    const {tagId, baseStationToInfo} = props;
     let lastUpdateTime: Number = (Date.now()/1000) - baseStationToInfo[baseStationToInfo.length - 1].lastUpdated;
     lastUpdateTime = Number(lastUpdateTime.toFixed(0));
     return (

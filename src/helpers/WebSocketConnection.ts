@@ -1,3 +1,9 @@
+function sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+}  
+
 class WebSocketConnection {
     private _serverAddress: string;
     private _wsConnection: WebSocket;
@@ -6,9 +12,13 @@ class WebSocketConnection {
     receiveMessage: (evt: MessageEvent) => void;
 
 
-    sendMessage = (data: string | ArrayBufferLike | Blob | ArrayBufferView) => {
+    sendMessage = async (data: string | ArrayBufferLike | Blob | ArrayBufferView) => {
         console.debug(`Sending: ${data}`);
+        while (!this.isConnected()) {
+                await sleep(200);
+        }
         this._wsConnection.send(data);
+        
     }
 
     isConnected = () => {

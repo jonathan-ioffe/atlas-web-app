@@ -1,10 +1,11 @@
-import { BaseStationStructure } from './BaseStationsStructure';
 import { AtlasConnection } from '../helpers/AtlasConnection';
+import { Feature } from 'ol';
 
-export interface IAppState {
+export interface AppState {
     isLoggedIn: boolean,
     atlasConnection?: AtlasConnection,
-    baseStationsStructure: BaseStationStructure[],
+    baseStationsFeatures: Feature[],
+    baseStationsCenter: number[],
     baseStationToInfo: any,
     detectedBaseStations: any[],
     tagToDetections: any

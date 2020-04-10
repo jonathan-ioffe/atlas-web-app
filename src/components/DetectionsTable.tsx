@@ -1,8 +1,8 @@
 import React from 'react';
 import '../styles/no-more-tables.css';
-import { BaseStationRow } from './BasestationRow';
+// import { BaseStationRow } from './BasestationRow';
 import { TagDetectionRow } from './TagDetectionRow';
-import { IDetectionsTableProps } from '../interfaces/IDetectionsTableProps';
+import { DetectionsTableProps } from '../interfaces/DetectionsTableProps';
 
 let  compareStringsAsNumber = (a: string, b: string) => {
     if (Number(a) < Number(b)) {
@@ -12,7 +12,7 @@ let  compareStringsAsNumber = (a: string, b: string) => {
 }
 
 
-let DetectionsTable = (props: IDetectionsTableProps) => {
+let DetectionsTable = (props: DetectionsTableProps) => {
     const {baseStationToInfo, detectedBaseStations, tagToDetections} = props;
     // return (
     //     <>

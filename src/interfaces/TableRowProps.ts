@@ -1,9 +1,9 @@
-export interface IBaseStationRowProps { 
+export interface BaseStationRowProps { 
     baseStationNum: number,
     baseStationInfo: any
 }
 
-export interface ITagDetectionRowProps {
+export interface TagDetectionRowProps {
     tagId: Number,
     baseStationToInfo: any,
     baseStationsList: any[]
