@@ -1,7 +1,10 @@
+import VectorLayer from 'ol/layer/Vector';
 import { BaseStationStructure } from './../interfaces/BaseStationsStructure';
-import { Fill, Circle, Style, Text } from 'ol/style';
+import { Fill, Circle, Style, Text, Stroke } from 'ol/style';
 import { Feature } from 'ol';
 import Point from 'ol/geom/Point';
+import { Coordinate } from 'ol/coordinate';
+import VectorSource from 'ol/source/Vector';
 
 
 const getCenterOfBaseStations = (baseStationsStructure: BaseStationStructure[]) => { 
@@ -50,21 +53,21 @@ const getFeaturesListOfBaseStations = (baseStationsStructure: BaseStationStructu
             geometry: new Point([x, y, z]),
         });
         const currStyle = new Style({
-        image: new Circle({
-            radius: 8,
-            fill: new Fill({
-            color: '#49ADDF'
-            })
-        }),
-        text: new Text({
-            text: currBaseStation.id.toString(),
-            scale: 1.2,
-            fill: new Fill({
-            color: '#FFFFFF'
+            image: new Circle({
+                radius: 8,
+                fill: new Fill({
+                color: '#49ADDF'
+                })
             }),
-            textBaseline: "center",
-            // offsetY: -10
-        })
+            text: new Text({
+                text: currBaseStation.id.toString(),
+                scale: 1.2,
+                fill: new Fill({
+                color: '#FFFFFF'
+                }),
+                textBaseline: "center",
+                // offsetY: -10
+            })
         })
         currFeature.setStyle(currStyle);
         features.push(currFeature)
@@ -72,4 +75,71 @@ const getFeaturesListOfBaseStations = (baseStationsStructure: BaseStationStructu
     return features;
 }
 
-export {getCenterOfBaseStations, getFeaturesListOfBaseStations};
+const getTagFeature = (tagId: number, location: Coordinate): Feature => {
+    const currFeature = new Feature({
+        geometry: new Point(location),
+    });
+    // const currStyle = new Style({
+    //     image: new Circle({
+    //         radius: 3,
+    //         fill: new Fill({
+    //         color: '#000000'
+    //         })
+    //     }),
+    //     text: new Text({
+    //         text: tagId.toString(),
+    //         scale: 1.2,
+    //         fill: new Fill({
+    //         color: '#FFFFFF'
+    //         }),
+    //         textBaseline: "bottom",
+    //         offsetY: -10
+    //     })
+    // });
+    // currFeature.setStyle(currStyle);
+    return currFeature;
+    // return new VectorLayer({
+    //     source: new VectorSource({
+    //         features: [currFeature]
+    //     }) 
+    // })
+}
+
+const featuresByTagsToLayer = (tagToLocationFeatures: {[tagId: number]: Feature[]}): Feature[] => {
+    let features: Feature[] = [];
+    Object.keys(tagToLocationFeatures).map((tagIdStr) => {
+        const tagId = Number(tagIdStr);
+
+        const baseStyle = new Style({
+            image: new Circle({
+                radius: 3,
+                fill: new Fill({
+                color: '#000000'
+                })
+            })
+        });
+        const latestStyle = baseStyle.clone()
+        latestStyle.setText(new Text({
+            text: tagId.toString(),
+            scale: 1.2,
+            fill: new Fill({
+            color: '#FFFFFF'
+            }),
+            stroke: new Stroke({color: '#000000'}),
+            textBaseline: "bottom",
+            offsetY: -10
+        }))
+
+        for (let i = 0; i < tagToLocationFeatures[tagId].length - 1; i++) {
+            const currFeature = tagToLocationFeatures[tagId][i];
+            currFeature.setStyle(baseStyle);
+            features.push(currFeature);
+        }
+        const latestFeature = tagToLocationFeatures[tagId][tagToLocationFeatures[tagId].length - 1];
+        latestFeature.setStyle(latestStyle);
+        features.push(latestFeature);
+    });
+    return features;
+}
+
+export {getCenterOfBaseStations, getFeaturesListOfBaseStations, getTagFeature, featuresByTagsToLayer};

@@ -1,9 +1,10 @@
 import { BaseStationStructure } from './../interfaces/BaseStationsStructure';
-import { SystemStructureMessage, UserAuthenticationRequest, UserAuthenticationResponse } from './../interfaces/AtlasMessagesStructure';
+import { SystemStructureMessage, UserAuthenticationRequest, UserAuthenticationResponse, LocalizationMessage } from './../interfaces/AtlasMessagesStructure';
 import { AppState } from '../interfaces/AppState';
 import { WebSocketConnection } from "./WebSocketConnection";
-import { getCenterOfBaseStations, getFeaturesListOfBaseStations } from './MapUtils';
+import { getCenterOfBaseStations, getFeaturesListOfBaseStations, getTagFeature } from './MapUtils';
 import { AtlasServerAddress, MessageClassName } from '../constants/AtlasConstants';
+import { Feature } from 'ol';
 
 
 const LAST_UPDATED_KEY = "lastUpdated";
@@ -13,6 +14,7 @@ class AtlasConnection {
     private _setStateByKey: (key: keyof AppState, value: any) => void
     private _getStateByKey: (key: keyof AppState) => any
     private _setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void
+    private _addTagFeature: (tagId: number, tagFeature: Feature) => void
 
     onConnectionOpen = () => {
         let msg = JSON.stringify({
@@ -27,6 +29,9 @@ class AtlasConnection {
         // listen to data sent from the websocket server
         const msg = JSON.parse(evt.data);
         if (msg.class === MessageClassName.Localization) {
+            const localizationMsg = msg as LocalizationMessage;
+            let currTagFeature = getTagFeature(localizationMsg.tagUid, [localizationMsg.x, localizationMsg.y, localizationMsg.z]);
+            this._addTagFeature(localizationMsg.tagUid, currTagFeature);
             // console.log(`Localization: ${JSON.stringify(msg)}`);
             // console.log(msg.x)
             // console.log(msg.y)
@@ -119,11 +124,15 @@ class AtlasConnection {
         this._connectionObject.sendMessage(msg);
     }
 
-    constructor(setStateByKey: (key: keyof AppState, value: any) => void, getStateByKey: (key: keyof AppState) => any, setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void) {
+    constructor(setStateByKey: (key: keyof AppState, value: any) => void,
+                getStateByKey: (key: keyof AppState) => any,
+                setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void,
+                addTagFeature: (tagId: number, tagFeature: Feature) => void) {
         this._connectionObject = new WebSocketConnection(AtlasServerAddress, this.onConnectionOpen, this.receiveMessage);
         this._setStateByKey = setStateByKey;
         this._getStateByKey = getStateByKey;
         this._setUserAuthCookie = setUserAuthCookie;
+        this._addTagFeature = addTagFeature;
     }
 }
 

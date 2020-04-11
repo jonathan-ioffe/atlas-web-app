@@ -16,6 +16,8 @@ import { AtlasConnection } from '../helpers/AtlasConnection';
 import { MapView } from './MapView';
 import { UserAuthenticationRequest } from '../interfaces/AtlasMessagesStructure';
 import { CookieName, GoogleApiClientId } from '../constants/AppConstants';
+import { Feature } from 'ol';
+import { featuresByTagsToLayer } from '../helpers/MapUtils';
 
 const determineIsLoginResponse = (toBeDetermined: GoogleLoginResponse | GoogleLoginResponseOffline): toBeDetermined is GoogleLoginResponse => {
   if ((toBeDetermined as GoogleLoginResponse).profileObj){
@@ -36,6 +38,8 @@ class App extends Component<ReactCookieProps, AppState> {
       atlasConnection: undefined,
       baseStationsCenter: [0,0,0],
       baseStationsFeatures: [],
+      tagsFeatures: [],
+      tagToLocationFeatures: {},
       baseStationToInfo: {},
       detectedBaseStations: [],
       tagToDetections: {}
@@ -45,7 +49,7 @@ class App extends Component<ReactCookieProps, AppState> {
   lastUpdateDate = new Date();
 
   componentDidMount() {
-    let atlasConnection = new AtlasConnection(this.setStateByKey, this.getStateByKey, this.setUserAuthToCookie.bind(this));
+    let atlasConnection = new AtlasConnection(this.setStateByKey, this.getStateByKey, this.setUserAuthToCookie, this.addTagFeature);
     this.setState({atlasConnection: atlasConnection}, () => {
       let storedCookie = this.getUserAuthFromCookies();
       if (storedCookie != null) {
@@ -73,6 +77,19 @@ class App extends Component<ReactCookieProps, AppState> {
   getStateByKey = (key: keyof AppState) => {
     return this.state[key];
   }
+  
+  addTagFeature = (tagId: number, tagFeature: Feature) => {
+    const {tagToLocationFeatures} = this.state;
+    if (Object.keys(tagToLocationFeatures).includes(tagId.toString())) {
+      tagToLocationFeatures[tagId].push(tagFeature);
+    }
+    else {
+      tagToLocationFeatures[tagId] = [tagFeature];
+    }
+    // console.log(tagsFeatures.length)
+    // tagsFeatures.push(tagFeature);
+    this.setState({tagToLocationFeatures: tagToLocationFeatures});
+  }
 
   getUserAuthFromCookies(): UserAuthenticationRequest | null {
     const {cookies} = this.props;
@@ -82,7 +99,7 @@ class App extends Component<ReactCookieProps, AppState> {
     return null;
   }
 
-  setUserAuthToCookie(userAuth: UserAuthenticationRequest) {
+  setUserAuthToCookie = (userAuth: UserAuthenticationRequest) => {
     const {cookies} = this.props;
     if (cookies != null)
       cookies.set(CookieName, userAuth);
@@ -108,12 +125,13 @@ class App extends Component<ReactCookieProps, AppState> {
   }
 
   mainPage() {
-    const {baseStationsCenter, baseStationsFeatures, baseStationToInfo, detectedBaseStations, tagToDetections} = this.state;
+    const {baseStationsCenter, baseStationsFeatures, tagToLocationFeatures, baseStationToInfo, detectedBaseStations, tagToDetections} = this.state;
     return (
       <>
       <GoogleLogout
         clientId={GoogleApiClientId}
         buttonText="Logout"
+        onFailure={() => {console.log("wat")}}
         onLogoutSuccess={() => {this.removeUserAuthFromCookie()}}
       />
       <div className="row">
@@ -127,6 +145,7 @@ class App extends Component<ReactCookieProps, AppState> {
         <MapView
           mapCenter={baseStationsCenter}
           baseStationsFeatures={baseStationsFeatures}
+          tagsFeatures={featuresByTagsToLayer(tagToLocationFeatures)}
         />
       </div>
       </>

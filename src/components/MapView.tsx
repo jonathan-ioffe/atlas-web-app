@@ -26,8 +26,9 @@ class MapView extends Component<MapViewProps, MapViewState> {
         }
     }
 
-
+    lastUpdateDate = new Date();
     mapDivId = `map-${Math.random()}`;
+    tagsLayer: VectorLayer | null = null;
 
     componentDidMount() {
         const {map} = this.state;
@@ -36,19 +37,34 @@ class MapView extends Component<MapViewProps, MapViewState> {
 
     shouldComponentUpdate() {
         const {mapCenterDefined, featuresDefined} = this.state;
-
-        return !mapCenterDefined || !featuresDefined;
+        const now = new Date();  
+        var seconds = (now.getTime() - this.lastUpdateDate.getTime()) / 1000;   
+        return !mapCenterDefined || !featuresDefined || seconds >= 10;
     }
     componentDidUpdate() {
-        const {map} = this.state;
-        const {mapCenter, baseStationsFeatures} = this.props;
-        this.setState({mapCenterDefined: true, featuresDefined: true})
-        map.getView().setCenter(mapCenter);
-        map.addLayer(new VectorLayer({
+        const {map, mapCenterDefined, featuresDefined} = this.state;
+        const {mapCenter, baseStationsFeatures, tagsFeatures} = this.props;
+        if (!mapCenterDefined) {
+            map.getView().setCenter(mapCenter);
+            this.setState({mapCenterDefined: true});
+        }
+        if (!featuresDefined) {
+            map.addLayer(new VectorLayer({
+                source: new VectorSource({
+                    features: baseStationsFeatures
+                }) 
+            }));
+            this.setState({featuresDefined: true})
+        }
+        const currTagsLayer = new VectorLayer({
             source: new VectorSource({
-                features: baseStationsFeatures
+                features: tagsFeatures
             }) 
-        }));
+        })
+        if (this.tagsLayer != null)
+            map.removeLayer(this.tagsLayer);
+        map.addLayer(currTagsLayer);
+        this.tagsLayer = currTagsLayer;
     }
         
     render() {

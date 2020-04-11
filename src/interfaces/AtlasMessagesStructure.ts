@@ -25,3 +25,12 @@ export interface UserAuthenticationResponse {
     signature: string | null,
     verified: boolean
 }
+
+export interface LocalizationMessage {
+    tagUid: number,
+    txUid: number,
+    time: number,
+    x: number,
+    y: number,
+    z: number
+}
