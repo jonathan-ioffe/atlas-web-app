@@ -81,6 +81,8 @@ class App extends Component<ReactCookieProps, AppState> {
   addTagFeature = (tagId: number, tagFeature: Feature) => {
     const {tagToLocationFeatures} = this.state;
     if (Object.keys(tagToLocationFeatures).includes(tagId.toString())) {
+      if (tagToLocationFeatures[tagId].length >= 100)
+        tagToLocationFeatures[tagId].shift()
       tagToLocationFeatures[tagId].push(tagFeature);
     }
     else {
