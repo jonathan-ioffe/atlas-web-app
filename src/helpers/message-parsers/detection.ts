@@ -1,6 +1,6 @@
 import { NumOfBasestationsPerTag } from '../../constants/app-constants';
 import { TagToDetections } from '../../components/table/table'
-import { DetectionMessage } from '../../interfaces/AtlasMessagesStructure'
+import { DetectionMessage } from '../../interfaces/atlas-message-structure'
 import { BaseStationInfo } from '../../interfaces/base-stations-structure'
 import { TagRowInfo } from '../../components/table/row';
 

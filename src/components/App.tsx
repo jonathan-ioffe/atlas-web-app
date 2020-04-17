@@ -13,14 +13,14 @@ import { instanceOf } from 'prop-types'
 import { withCookies, Cookies, ReactCookieProps } from 'react-cookie'
 import { AtlasConnection } from '../connections/atlas-connection'
 import { MapView } from './map-view'
-import { UserAuthenticationRequest } from '../interfaces/AtlasMessagesStructure'
+import { UserAuthenticationRequest } from '../interfaces/atlas-message-structure'
 import {
   CookieName,
   GoogleApiClientId,
   NumOfLocalizationsPerTag,
 } from '../constants/app-constants'
 import { Feature } from 'ol'
-import { featuresByTagsToLayer } from '../helpers/map-utils'
+import { featuresByTagsToCombinedFeatureArray } from '../helpers/map-utils'
 import { BrowserView, MobileView } from 'react-device-detect'
 
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
@@ -164,7 +164,7 @@ class App extends Component<ReactCookieProps, AppState> {
             <MapView
               mapCenter={baseStationsCenter}
               baseStationsFeatures={baseStationsFeatures}
-              tagsFeatures={featuresByTagsToLayer(tagToLocationFeatures)}
+              tagsFeatures={featuresByTagsToCombinedFeatureArray(tagToLocationFeatures)}
             />
           </div>
         </BrowserView>
@@ -177,7 +177,7 @@ class App extends Component<ReactCookieProps, AppState> {
               <MapView
                 mapCenter={baseStationsCenter}
                 baseStationsFeatures={baseStationsFeatures}
-                tagsFeatures={featuresByTagsToLayer(tagToLocationFeatures)}
+                tagsFeatures={featuresByTagsToCombinedFeatureArray(tagToLocationFeatures)}
               />
             </div>
           </Carousel>

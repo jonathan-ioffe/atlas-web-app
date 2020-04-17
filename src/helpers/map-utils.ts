@@ -3,6 +3,7 @@ import { Fill, Circle, Style, Text, Stroke } from 'ol/style'
 import { Feature } from 'ol'
 import Point from 'ol/geom/Point'
 import { Coordinate } from 'ol/coordinate'
+import LineString from 'ol/geom/LineString'
 
 export const getFeaturesListOfBaseStations = (
   baseStationsStructure: BaseStationStructure[],
@@ -50,7 +51,7 @@ export const getTagFeature = (location: Coordinate): Feature => {
   return currFeature
 }
 
-export const featuresByTagsToLayer = (tagToLocationFeatures: {
+export const featuresByTagsToCombinedFeatureArray = (tagToLocationFeatures: {
   [tagId: number]: Feature[]
 }): Feature[] => {
   let features: Feature[] = []
@@ -88,6 +89,11 @@ export const featuresByTagsToLayer = (tagToLocationFeatures: {
       tagToLocationFeatures[tagId][tagToLocationFeatures[tagId].length - 1]
     latestFeature.setStyle(latestStyle)
     features.push(latestFeature)
+
+    // const lineFeature = new Feature({
+    //   geometry: new LineString(tagToLocationFeatures[tagId])
+    // })
+
     return null
   })
   return features

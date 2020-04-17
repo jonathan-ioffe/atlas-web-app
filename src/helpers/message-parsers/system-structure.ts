@@ -1,4 +1,4 @@
-import { SystemStructureMessage } from '../../interfaces/AtlasMessagesStructure'
+import { SystemStructureMessage } from '../../interfaces/atlas-message-structure'
 import { BaseStationStructure } from '../../interfaces/base-stations-structure'
 import { getFeaturesListOfBaseStations } from '../map-utils'
 import { Feature } from 'ol'

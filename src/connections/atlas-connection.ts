@@ -6,7 +6,7 @@ import {
   UserAuthenticationResponse,
   LocalizationMessage,
   DetectionMessage,
-} from '../interfaces/AtlasMessagesStructure'
+} from '../interfaces/atlas-message-structure'
 import { WebSocketConnection } from './web-socket-connection'
 import { getTagFeature } from '../helpers/map-utils'
 import {
@@ -76,8 +76,6 @@ export class AtlasConnection {
         this._setStateByKey('baseStationsCenter', baseStationsCenter)
         break
       case MessageClassName.TagSummary:
-        break
-      case MessageClassName.GpsLocalization:
         break
       default:
         console.debug(`Received: ${JSON.stringify(msg)}`)
