@@ -51,11 +51,11 @@ export const getTagFeature = (location: Coordinate): Feature => {
   return currFeature
 }
 
-export const featuresByTagsToCombinedFeatureArray = (tagToLocationFeatures: {
-  [tagId: number]: Feature[]
+export const locationsByTagsToCombinedFeatureArray = (tagToLocations: {
+  [tagId: number]: Coordinate[]
 }): Feature[] => {
   let features: Feature[] = []
-  Object.keys(tagToLocationFeatures).map((tagIdStr: string) => {
+  Object.keys(tagToLocations).map((tagIdStr: string) => {
     const tagId = Number(tagIdStr)
 
     const baseStyle = new Style({
@@ -80,20 +80,26 @@ export const featuresByTagsToCombinedFeatureArray = (tagToLocationFeatures: {
       }),
     )
 
-    for (let i = 0; i < tagToLocationFeatures[tagId].length - 1; i++) {
-      const currFeature = tagToLocationFeatures[tagId][i]
+    for (let i = 0; i < tagToLocations[tagId].length - 1; i++) {
+      const currLocation = tagToLocations[tagId][i]
+      const currFeature = new Feature({
+        geometry: new Point(currLocation),
+      })
       currFeature.setStyle(baseStyle)
       features.push(currFeature)
     }
-    const latestFeature =
-      tagToLocationFeatures[tagId][tagToLocationFeatures[tagId].length - 1]
+    const latestLocation =
+      tagToLocations[tagId][tagToLocations[tagId].length - 1]
+    const latestFeature = new Feature({
+      geometry: new Point(latestLocation),
+    })
     latestFeature.setStyle(latestStyle)
     features.push(latestFeature)
 
-    // const lineFeature = new Feature({
-    //   geometry: new LineString(tagToLocationFeatures[tagId])
-    // })
-
+    const lineFeature = new Feature({
+      geometry: new LineString(tagToLocations[tagId])
+    })
+    features.push(lineFeature)
     return null
   })
   return features

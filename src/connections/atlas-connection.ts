@@ -1,3 +1,4 @@
+import { Coordinate } from 'ol/coordinate'
 import { parseSystemStructureMessage } from '../helpers/message-parsers/system-structure'
 import { parseDetectionMessage } from '../helpers/message-parsers/detection'
 import {
@@ -21,7 +22,7 @@ export class AtlasConnection {
   private _setStateByKey: (key: keyof AppState, value: any) => void
   private _getStateByKey: (key: keyof AppState) => any
   private _setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void
-  private _addTagFeature: (tagId: number, tagFeature: Feature) => void
+  private _addTagLocalization: (tagId: number, tagFeature: Coordinate) => void
 
   onConnectionOpen = () => {
     let msg = JSON.stringify({
@@ -51,12 +52,15 @@ export class AtlasConnection {
         break
       case MessageClassName.Localization:
         const localizationMsg = msg as LocalizationMessage
-        let currTagFeature = getTagFeature([
+        // let currTagFeature = getTagFeature([
+        //   localizationMsg.x,
+        //   localizationMsg.y,
+        //   localizationMsg.z,
+        // ])
+        this._addTagLocalization(localizationMsg.tagUid % 1e6, [
           localizationMsg.x,
           localizationMsg.y,
-          localizationMsg.z,
         ])
-        this._addTagFeature(localizationMsg.tagUid % 1e6, currTagFeature)
         break
       case MessageClassName.Detection:
         const detectionMsg = msg as DetectionMessage
@@ -95,7 +99,7 @@ export class AtlasConnection {
     setStateByKey: (key: keyof AppState, value: any) => void,
     getStateByKey: (key: keyof AppState) => any,
     setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void,
-    addTagFeature: (tagId: number, tagFeature: Feature) => void,
+    addTagFeature: (tagId: number, tagFeature: Coordinate) => void,
   ) {
     this._connectionObject = new WebSocketConnection(
       AtlasServerAddress,
@@ -105,6 +109,6 @@ export class AtlasConnection {
     this._setStateByKey = setStateByKey
     this._getStateByKey = getStateByKey
     this._setUserAuthCookie = setUserAuthCookie
-    this._addTagFeature = addTagFeature
+    this._addTagLocalization = addTagFeature
   }
 }

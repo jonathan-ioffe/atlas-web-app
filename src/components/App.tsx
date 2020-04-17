@@ -20,12 +20,13 @@ import {
   NumOfLocalizationsPerTag,
 } from '../constants/app-constants'
 import { Feature } from 'ol'
-import { featuresByTagsToCombinedFeatureArray } from '../helpers/map-utils'
+import { locationsByTagsToCombinedFeatureArray } from '../helpers/map-utils'
 import { BrowserView, MobileView } from 'react-device-detect'
 
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { Carousel } from 'react-responsive-carousel'
 import '../styles/carousel-override.css'
+import { Coordinate } from 'ol/coordinate'
 
 const determineIsLoginResponse = (
   toBeDetermined: GoogleLoginResponse | GoogleLoginResponseOffline,
@@ -41,7 +42,7 @@ export interface AppState {
   atlasConnection?: AtlasConnection
   baseStationsFeatures: Feature[]
   tagsFeatures: Feature[]
-  tagToLocationFeatures: { [tagId: number]: Feature[] }
+  tagToLocations: { [tagId: number]: Coordinate[] }
   baseStationsCenter: number[]
   tagToDetections: TagToDetections
 }
@@ -59,7 +60,7 @@ class App extends Component<ReactCookieProps, AppState> {
       baseStationsCenter: [0, 0],
       baseStationsFeatures: [],
       tagsFeatures: [],
-      tagToLocationFeatures: {},
+      tagToLocations: {},
       tagToDetections: {},
     }
   }
@@ -71,7 +72,7 @@ class App extends Component<ReactCookieProps, AppState> {
       this.setStateByKey,
       this.getStateByKey,
       this.setUserAuthToCookie,
-      this.addTagFeature,
+      this.addTagLocation,
     )
     this.setState({ atlasConnection: atlasConnection }, () => {
       let storedCookie = this.getUserAuthFromCookies()
@@ -98,17 +99,17 @@ class App extends Component<ReactCookieProps, AppState> {
     return this.state[key]
   }
 
-  addTagFeature = (tagId: number, tagFeature: Feature) => {
-    const { tagToLocationFeatures } = this.state
-    if (Object.keys(tagToLocationFeatures).includes(tagId.toString())) {
-      if (tagToLocationFeatures[tagId].length >= NumOfLocalizationsPerTag)
-        tagToLocationFeatures[tagId].shift()
-      tagToLocationFeatures[tagId].push(tagFeature)
+  addTagLocation = (tagId: number, tagLocation: Coordinate) => {
+    const { tagToLocations } = this.state
+    if (Object.keys(tagToLocations).includes(tagId.toString())) {
+      if (tagToLocations[tagId].length >= NumOfLocalizationsPerTag)
+      tagToLocations[tagId].shift()
+      tagToLocations[tagId].push(tagLocation)
     } else {
-      tagToLocationFeatures[tagId] = [tagFeature]
+      tagToLocations[tagId] = [tagLocation]
     }
 
-    this.setState({ tagToLocationFeatures: tagToLocationFeatures })
+    this.setState({ tagToLocations: tagToLocations })
   }
 
   getUserAuthFromCookies(): UserAuthenticationRequest | null {
@@ -151,7 +152,7 @@ class App extends Component<ReactCookieProps, AppState> {
     const {
       baseStationsCenter,
       baseStationsFeatures,
-      tagToLocationFeatures,
+      tagToLocations,
       tagToDetections,
     } = this.state
     return (
@@ -164,7 +165,7 @@ class App extends Component<ReactCookieProps, AppState> {
             <MapView
               mapCenter={baseStationsCenter}
               baseStationsFeatures={baseStationsFeatures}
-              tagsFeatures={featuresByTagsToCombinedFeatureArray(tagToLocationFeatures)}
+              tagsFeatures={locationsByTagsToCombinedFeatureArray(tagToLocations)}
             />
           </div>
         </BrowserView>
@@ -177,7 +178,7 @@ class App extends Component<ReactCookieProps, AppState> {
               <MapView
                 mapCenter={baseStationsCenter}
                 baseStationsFeatures={baseStationsFeatures}
-                tagsFeatures={featuresByTagsToCombinedFeatureArray(tagToLocationFeatures)}
+                tagsFeatures={locationsByTagsToCombinedFeatureArray(tagToLocations)}
               />
             </div>
           </Carousel>
