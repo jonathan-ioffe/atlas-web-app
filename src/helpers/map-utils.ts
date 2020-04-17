@@ -1,12 +1,10 @@
-import VectorLayer from 'ol/layer/Vector'
-import { BaseStationStructure } from './../interfaces/BaseStationsStructure'
+import { BaseStationStructure } from '../interfaces/base-stations-structure'
 import { Fill, Circle, Style, Text, Stroke } from 'ol/style'
 import { Feature } from 'ol'
 import Point from 'ol/geom/Point'
 import { Coordinate } from 'ol/coordinate'
-import VectorSource from 'ol/source/Vector'
 
-const getFeaturesListOfBaseStations = (
+export const getFeaturesListOfBaseStations = (
   baseStationsStructure: BaseStationStructure[],
 ): Feature[] => {
   let features: Feature[] = []
@@ -37,7 +35,6 @@ const getFeaturesListOfBaseStations = (
           color: '#FFFFFF',
         }),
         textBaseline: 'center',
-        // offsetY: -10
       }),
     })
     currFeature.setStyle(currStyle)
@@ -46,37 +43,14 @@ const getFeaturesListOfBaseStations = (
   return features
 }
 
-const getTagFeature = (tagId: number, location: Coordinate): Feature => {
+export const getTagFeature = (location: Coordinate): Feature => {
   const currFeature = new Feature({
     geometry: new Point(location),
   })
-  // const currStyle = new Style({
-  //     image: new Circle({
-  //         radius: 3,
-  //         fill: new Fill({
-  //         color: '#000000'
-  //         })
-  //     }),
-  //     text: new Text({
-  //         text: tagId.toString(),
-  //         scale: 1.2,
-  //         fill: new Fill({
-  //         color: '#FFFFFF'
-  //         }),
-  //         textBaseline: "bottom",
-  //         offsetY: -10
-  //     })
-  // });
-  // currFeature.setStyle(currStyle);
   return currFeature
-  // return new VectorLayer({
-  //     source: new VectorSource({
-  //         features: [currFeature]
-  //     })
-  // })
 }
 
-const featuresByTagsToLayer = (tagToLocationFeatures: {
+export const featuresByTagsToLayer = (tagToLocationFeatures: {
   [tagId: number]: Feature[]
 }): Feature[] => {
   let features: Feature[] = []
@@ -118,5 +92,3 @@ const featuresByTagsToLayer = (tagToLocationFeatures: {
   })
   return features
 }
-
-export { getFeaturesListOfBaseStations, getTagFeature, featuresByTagsToLayer }

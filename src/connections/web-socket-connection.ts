@@ -25,9 +25,6 @@ class WebSocketConnection {
     return this._wsConnection.readyState === WebSocket.OPEN
   }
 
-  /**
-   * utilited by the @function connect to check if the connection is close, if so attempts to reconnect
-   */
   check = () => {
     if (
       !this._wsConnection ||
@@ -36,11 +33,6 @@ class WebSocketConnection {
       this.connect() //check if websocket instance is closed, if so call `connect` function.
   }
 
-  /**
-   * @function connect
-   * This function establishes the connect with the websocket and also ensures constant reconnection if connection closes
-   * With the help of the following article: https://dev.to/finallynero/using-websockets-in-react-4fkp
-   */
   connect = () => {
     let that = this // cache the this
     let connectInterval: any

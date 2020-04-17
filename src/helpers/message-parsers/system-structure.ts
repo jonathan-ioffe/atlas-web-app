@@ -1,6 +1,6 @@
 import { SystemStructureMessage } from '../../interfaces/AtlasMessagesStructure'
-import { BaseStationStructure } from '../../interfaces/BaseStationsStructure'
-import { getFeaturesListOfBaseStations } from '../MapUtils'
+import { BaseStationStructure } from '../../interfaces/base-stations-structure'
+import { getFeaturesListOfBaseStations } from '../map-utils'
 import { Feature } from 'ol'
 
 export interface ParseSystemStructureMessageReturnType {

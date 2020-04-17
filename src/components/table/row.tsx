@@ -1,6 +1,8 @@
 import React, { FunctionComponent, useEffect } from 'react'
-import { BaseStationInfo } from '../interfaces/BaseStationsStructure'
 import $ from 'jquery'
+import { getElapsedTime } from '../../helpers/data-formatters'
+import { BaseStationInfo } from '../../interfaces/base-stations-structure'
+import { compareTagsByLastDetection } from '../../helpers/comparators'
 
 export interface TagRowInfo {
   baseStationNum: number
@@ -13,21 +15,7 @@ export interface TagDetectionRowProps {
   tagRowInfo: TagRowInfo[]
 }
 
-const getElapsedTime = (epochTimestamp: number) => {
-  return Number((Date.now() / 1000 - epochTimestamp).toFixed(0))
-}
-
-const compareTagsByLastDetection = (item1: TagRowInfo, item2: TagRowInfo) => {
-  if (item1.baseStationInfo.detectionTime < item2.baseStationInfo.detectionTime)
-    return -1
-  else if (
-    item1.baseStationInfo.detectionTime > item2.baseStationInfo.detectionTime
-  )
-    return 1
-  return 0
-}
-
-let TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
+export const TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
   props: TagDetectionRowProps,
 ) => {
   useEffect(() => {
@@ -40,8 +28,8 @@ let TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
   )
   return (
     <tr>
-      <td data-title='Tag ID'>{tagId}</td>
-      <td data-title='Last Detection'>
+      <td>{tagId}</td>
+      <td>
         {lastDetectionTime <= 0 ? 0 : lastDetectionTime}s
       </td>
       <td>
@@ -62,5 +50,3 @@ let TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
     </tr>
   )
 }
-
-export { TagDetectionRow }

@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
-import '../styles/App.css'
 import '../styles/bootstrap.min.css'
-import '../styles/open-iconic-bootstrap.min.css'
 import 'popper.js'
 import 'bootstrap'
-import { Navbar } from './Navbar'
-import { DetectionsTable, TagToDetections } from './DetectionsTable'
+import { Navbar } from './navbar'
+import { DetectionsTable, TagToDetections } from './table'
 import {
   GoogleLogin,
   GoogleLoginResponse,
@@ -13,17 +11,21 @@ import {
 } from 'react-google-login'
 import { instanceOf } from 'prop-types'
 import { withCookies, Cookies, ReactCookieProps } from 'react-cookie'
-import { AtlasConnection } from '../helpers/AtlasConnection'
-import { MapView } from './MapView'
+import { AtlasConnection } from '../connections/atlas-connection'
+import { MapView } from './map-view'
 import { UserAuthenticationRequest } from '../interfaces/AtlasMessagesStructure'
 import {
   CookieName,
   GoogleApiClientId,
   NumOfLocalizationsPerTag,
-} from '../constants/AppConstants'
+} from '../constants/app-constants'
 import { Feature } from 'ol'
-import { featuresByTagsToLayer } from '../helpers/MapUtils'
+import { featuresByTagsToLayer } from '../helpers/map-utils'
 import { BrowserView, MobileView } from 'react-device-detect'
+
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
+import { Carousel } from 'react-responsive-carousel'
+import '../styles/carousel-override.css'
 
 const determineIsLoginResponse = (
   toBeDetermined: GoogleLoginResponse | GoogleLoginResponseOffline,
@@ -167,7 +169,18 @@ class App extends Component<ReactCookieProps, AppState> {
           </div>
         </BrowserView>
         <MobileView>
-          
+          <Carousel showStatus={false} showThumbs={false} dynamicHeight>
+            <div>
+              <DetectionsTable tagToDetections={tagToDetections} />
+            </div>
+            <div>
+              <MapView
+                mapCenter={baseStationsCenter}
+                baseStationsFeatures={baseStationsFeatures}
+                tagsFeatures={featuresByTagsToLayer(tagToLocationFeatures)}
+              />
+            </div>
+          </Carousel>
         </MobileView>
       </>
     )

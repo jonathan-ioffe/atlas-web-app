@@ -1,20 +1,20 @@
-import { parseSystemStructureMessage } from './message-parsers/system-structure'
-import { parseDetectionMessage } from './message-parsers/detection'
+import { parseSystemStructureMessage } from '../helpers/message-parsers/system-structure'
+import { parseDetectionMessage } from '../helpers/message-parsers/detection'
 import {
   SystemStructureMessage,
   UserAuthenticationRequest,
   UserAuthenticationResponse,
   LocalizationMessage,
   DetectionMessage,
-} from './../interfaces/AtlasMessagesStructure'
-import { WebSocketConnection } from './WebSocketConnection'
-import { getTagFeature } from './MapUtils'
+} from '../interfaces/AtlasMessagesStructure'
+import { WebSocketConnection } from './web-socket-connection'
+import { getTagFeature } from '../helpers/map-utils'
 import {
   AtlasServerAddress,
   MessageClassName,
-} from '../constants/AtlasConstants'
+} from '../constants/atlas-constants'
 import { Feature } from 'ol'
-import { AppState } from '../components/App'
+import { AppState } from '../components/app'
 
 export class AtlasConnection {
   private _connectionObject: WebSocketConnection
@@ -51,7 +51,7 @@ export class AtlasConnection {
         break
       case MessageClassName.Localization:
         const localizationMsg = msg as LocalizationMessage
-        let currTagFeature = getTagFeature(localizationMsg.tagUid, [
+        let currTagFeature = getTagFeature([
           localizationMsg.x,
           localizationMsg.y,
           localizationMsg.z,

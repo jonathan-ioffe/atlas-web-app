@@ -4,10 +4,27 @@ import VectorSource from 'ol/source/Vector'
 import TileLayer from 'ol/layer/Tile'
 import OSM from 'ol/source/OSM'
 import { Map, View } from 'ol'
+import { isMobile } from 'react-device-detect'
+import { MapUpdateIntervalSeconds } from '../../constants/app-constants'
+import { Feature } from 'ol'
+import { Coordinate } from 'ol/coordinate'
 import 'ol/ol.css'
-import { MapViewProps, MapViewState } from '../interfaces/MapView'
+import './style.css'
 
-class MapView extends Component<MapViewProps, MapViewState> {
+export interface MapViewProps {
+  mapCenter: Coordinate
+  baseStationsFeatures: Feature[]
+  tagsFeatures: Feature[]
+}
+
+export interface MapViewState {
+  map: Map
+  mapCenterDefined: boolean
+  featuresDefined: boolean
+  tagsLayer?: VectorLayer
+}
+
+export class MapView extends Component<MapViewProps, MapViewState> {
   constructor(props: MapViewProps) {
     super(props)
     this.state = {
@@ -37,7 +54,11 @@ class MapView extends Component<MapViewProps, MapViewState> {
     const { mapCenterDefined, featuresDefined } = this.state
     const now = new Date()
     var seconds = (now.getTime() - this.lastUpdateDate.getTime()) / 1000
-    return !mapCenterDefined || !featuresDefined || seconds >= 10
+    return (
+      !mapCenterDefined ||
+      !featuresDefined ||
+      seconds >= MapUpdateIntervalSeconds
+    )
   }
   componentDidUpdate() {
     const { map, mapCenterDefined, featuresDefined } = this.state
@@ -69,12 +90,9 @@ class MapView extends Component<MapViewProps, MapViewState> {
   render() {
     return (
       <div
-        className='col-9 col-xs-3 ml-auto'
-        style={{ position: 'relative', height: '90vh' }}
+        className={`map-view ${isMobile ? '' : 'col-9 col-xs-3 ml-auto'}`}
         id={this.mapDivId}
       ></div>
     )
   }
 }
-
-export { MapView }

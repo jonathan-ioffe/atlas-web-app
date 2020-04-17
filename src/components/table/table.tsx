@@ -1,13 +1,7 @@
 import React from 'react'
-import '../styles/no-more-tables.css'
-import { TagDetectionRow, TagRowInfo } from './TagDetectionRow'
-
-let compareStringsAsNumber = (a: string, b: string) => {
-  if (Number(a) < Number(b)) {
-    return -1
-  }
-  return 1
-}
+import { TagRowInfo, TagDetectionRow } from './row'
+import { compareStringsAsNumber } from '../../helpers/comparators'
+import './style.css'
 
 export type TagToDetections = { [tagUid: number]: TagRowInfo[] }
 
@@ -15,7 +9,7 @@ export interface DetectionsTableProps {
   tagToDetections: TagToDetections
 }
 
-let DetectionsTable = (props: DetectionsTableProps) => {
+export const DetectionsTable = (props: DetectionsTableProps) => {
   const { tagToDetections } = props
   return (
     <>
@@ -23,7 +17,6 @@ let DetectionsTable = (props: DetectionsTableProps) => {
         <p className='text-center'>No tags detected!</p>
       ) : (
         <table className='table-striped table-hover'>
-          {/* <table className="table table-striped table-bordered table-hover"> */}
           <thead>
             <tr>
               <th scope='col'>Tag ID</th>
@@ -47,5 +40,3 @@ let DetectionsTable = (props: DetectionsTableProps) => {
     </>
   )
 }
-
-export { DetectionsTable }

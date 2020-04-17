@@ -1,8 +1,8 @@
-import { NumOfBasestationsPerTag } from './../../constants/AppConstants';
-import { TagToDetections } from '../../components/DetectionsTable'
+import { NumOfBasestationsPerTag } from '../../constants/app-constants';
+import { TagToDetections } from '../../components/table/table'
 import { DetectionMessage } from '../../interfaces/AtlasMessagesStructure'
-import { BaseStationInfo } from '../../interfaces/BaseStationsStructure'
-import { TagRowInfo } from '../../components/TagDetectionRow'
+import { BaseStationInfo } from '../../interfaces/base-stations-structure'
+import { TagRowInfo } from '../../components/table/row';
 
 export const parseDetectionMessage = (
   detectionMsg: DetectionMessage,

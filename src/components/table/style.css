@@ -1,0 +1,10 @@
+.badge-basestation {
+  color: #fff;
+  background-color: #49addf;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  border: 0.2rem solid #eee;
+}
