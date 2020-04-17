@@ -1,0 +1,16 @@
+{
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "jsxSingleQuote": true,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all",
+    "overrides": [
+      {
+        "files": "*.example",
+        "options": { "parser": "babel" }
+      }
+    ]
+  }
+  

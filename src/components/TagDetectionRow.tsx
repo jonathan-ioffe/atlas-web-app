@@ -1,34 +1,66 @@
-import React from 'react';
-import { TagDetectionRowProps } from '../interfaces/TableRowProps';
+import React, { FunctionComponent, useEffect } from 'react'
+import { BaseStationInfo } from '../interfaces/BaseStationsStructure'
+import $ from 'jquery'
 
-
-let TagDetectionRow = (props: TagDetectionRowProps) => {
-    const {tagId, baseStationToInfo} = props;
-    let lastUpdateTime: Number = (Date.now()/1000) - baseStationToInfo[baseStationToInfo.length - 1].lastUpdated;
-    lastUpdateTime = Number(lastUpdateTime.toFixed(0));
-    return (
-        <tr>
-            <td data-title="Tag ID">{tagId}</td>
-            <td data-title="Last Detection">{lastUpdateTime <= 0 ? 0 : lastUpdateTime}s</td>
-            {/* {baseStationsList.map(baseStationNum => (
-                <td 
-                    data-toggle="tooltip" data-placement="top" title={`${baseStationToInfo[baseStationNum] ? (Date.now()/1000) - baseStationToInfo[baseStationNum]["detectionTime"]: ''}`}
-                    data-title={baseStationNum} 
-                    key={`${tagId}${baseStationNum}`}
-                >{baseStationToInfo[baseStationNum] ? baseStationToInfo[baseStationNum].snr : " "}</td>
-            ))} */}
-            <td>
-            {baseStationToInfo.map((item: any) => (
-        
-                `${item.baseStationNum} - ${item.lastUpdated} |`
-            ))}
-            {/* {baseStationsList.map(baseStationNum => (
-                baseStationToInfo[baseStationNum] ? `${baseStationNum}-${baseStationToInfo[baseStationNum].snr}` : ""
-            ))} */}
-            </td>
-        </tr>
-    );
+export interface TagRowInfo {
+  baseStationNum: number
+  lastDetection: number
+  baseStationInfo: BaseStationInfo
 }
 
+export interface TagDetectionRowProps {
+  tagId: Number
+  tagRowInfo: TagRowInfo[]
+}
 
-export {TagDetectionRow};
+const getElapsedTime = (epochTimestamp: number) => {
+  return Number((Date.now() / 1000 - epochTimestamp).toFixed(0))
+}
+
+const compareTagsByLastDetection = (item1: TagRowInfo, item2: TagRowInfo) => {
+  if (item1.baseStationInfo.detectionTime < item2.baseStationInfo.detectionTime)
+    return -1
+  else if (
+    item1.baseStationInfo.detectionTime > item2.baseStationInfo.detectionTime
+  )
+    return 1
+  return 0
+}
+
+let TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
+  props: TagDetectionRowProps,
+) => {
+  useEffect(() => {
+    $('[data-toggle="tooltip"]').tooltip()
+  }, [props])
+
+  const { tagId, tagRowInfo } = props
+  let lastDetectionTime = getElapsedTime(
+    tagRowInfo[tagRowInfo.length - 1].lastDetection,
+  )
+  return (
+    <tr>
+      <td data-title='Tag ID'>{tagId}</td>
+      <td data-title='Last Detection'>
+        {lastDetectionTime <= 0 ? 0 : lastDetectionTime}s
+      </td>
+      <td>
+        {tagRowInfo.sort(compareTagsByLastDetection).map((item: TagRowInfo) => (
+          <span
+            className='badge badge-pill badge-basestation mr-1'
+            key={item.baseStationNum}
+            data-toggle='tooltip'
+            data-placement='top'
+            title={`SNR: ${item.baseStationInfo.snr} | ${getElapsedTime(
+              item.baseStationInfo.detectionTime,
+            )}s ago`}
+          >
+            {item.baseStationNum}
+          </span>
+        ))}
+      </td>
+    </tr>
+  )
+}
+
+export { TagDetectionRow }
