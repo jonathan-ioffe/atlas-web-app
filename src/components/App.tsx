@@ -26,6 +26,8 @@ import { BrowserView, MobileView } from 'react-device-detect'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { Carousel } from 'react-responsive-carousel'
 import '../styles/carousel-override.css'
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css'
+import Loader from 'react-loader-spinner'
 import { Coordinate } from 'ol/coordinate'
 
 const determineIsLoginResponse = (
@@ -39,6 +41,7 @@ const determineIsLoginResponse = (
 
 export interface AppState {
   isLoggedIn: boolean
+  isLoading: boolean
   atlasConnection?: AtlasConnection
   baseStationsFeatures: Feature[]
   tagsFeatures: Feature[]
@@ -56,6 +59,7 @@ class App extends Component<ReactCookieProps, AppState> {
     super(props)
     this.state = {
       isLoggedIn: false,
+      isLoading: true,
       atlasConnection: undefined,
       baseStationsCenter: [0, 0],
       baseStationsFeatures: [],
@@ -78,6 +82,8 @@ class App extends Component<ReactCookieProps, AppState> {
       let storedCookie = this.getUserAuthFromCookies()
       if (storedCookie != null) {
         atlasConnection.authenticateUser(storedCookie)
+      } else {
+        this.setState({ isLoading: false })
       }
     })
   }
@@ -103,7 +109,7 @@ class App extends Component<ReactCookieProps, AppState> {
     const { tagToLocations } = this.state
     if (Object.keys(tagToLocations).includes(tagId.toString())) {
       if (tagToLocations[tagId].length >= NumOfLocalizationsPerTag)
-      tagToLocations[tagId].shift()
+        tagToLocations[tagId].shift()
       tagToLocations[tagId].push(tagLocation)
     } else {
       tagToLocations[tagId] = [tagLocation]
@@ -135,6 +141,7 @@ class App extends Component<ReactCookieProps, AppState> {
     response: GoogleLoginResponse | GoogleLoginResponseOffline,
   ) => {
     if (determineIsLoginResponse(response)) {
+      this.setState({ isLoading: true })
       const { atlasConnection } = this.state
       let email = response.profileObj.email
       let tokenId = response.tokenId
@@ -165,7 +172,9 @@ class App extends Component<ReactCookieProps, AppState> {
             <MapView
               mapCenter={baseStationsCenter}
               baseStationsFeatures={baseStationsFeatures}
-              tagsFeatures={locationsByTagsToCombinedFeatureArray(tagToLocations)}
+              tagsFeatures={locationsByTagsToCombinedFeatureArray(
+                tagToLocations,
+              )}
             />
           </div>
         </BrowserView>
@@ -178,7 +187,9 @@ class App extends Component<ReactCookieProps, AppState> {
               <MapView
                 mapCenter={baseStationsCenter}
                 baseStationsFeatures={baseStationsFeatures}
-                tagsFeatures={locationsByTagsToCombinedFeatureArray(tagToLocations)}
+                tagsFeatures={locationsByTagsToCombinedFeatureArray(
+                  tagToLocations,
+                )}
               />
             </div>
           </Carousel>
@@ -189,22 +200,33 @@ class App extends Component<ReactCookieProps, AppState> {
 
   loginPage() {
     return (
-      <GoogleLogin
-        clientId={GoogleApiClientId}
-        buttonText='Login'
-        onSuccess={this.responseGoogle}
-        onFailure={this.responseGoogle}
-        cookiePolicy={'single_host_origin'}
-      />
+      <div className='m-2'>
+        <span className="mr-2">To proceed: </span>
+        <GoogleLogin
+          clientId={GoogleApiClientId}
+          buttonText='Login'
+          onSuccess={this.responseGoogle}
+          onFailure={this.responseGoogle}
+          cookiePolicy={'single_host_origin'}
+        />
+      </div>
     )
   }
 
   render() {
-    const { isLoggedIn } = this.state
+    const { isLoggedIn, isLoading } = this.state
     return (
       <>
         <Navbar />
-        {isLoggedIn ? this.mainPage() : this.loginPage()}
+        {isLoading ? (
+          <div className='mt-2 text-center'>
+            <Loader type='ThreeDots' color='#49addf' />
+          </div>
+        ) : isLoggedIn ? (
+          this.mainPage()
+        ) : (
+          this.loginPage()
+        )}
       </>
     )
   }

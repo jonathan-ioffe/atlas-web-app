@@ -49,6 +49,7 @@ export class AtlasConnection {
         } else {
           console.log('Unverified login')
         }
+        this._setStateByKey('isLoading', false)
         break
       case MessageClassName.Localization:
         const localizationMsg = msg as LocalizationMessage
