@@ -76,7 +76,7 @@ export const locationsByTagsToCombinedFeatureArray = (tagToLocations: {
         fill: new Fill({
           color: '#FFFFFF',
         }),
-        stroke: new Stroke({ color: '#000000' }),
+        stroke: new Stroke({ color: '#000000', width: 2 }),
         textBaseline: 'bottom',
         offsetY: -10,
       }),
