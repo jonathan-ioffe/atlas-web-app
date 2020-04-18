@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { TagRowInfo, TagDetectionRow } from './row'
 import { compareStringsAsNumber } from '../../helpers/comparators'
 import './style.css'
@@ -9,7 +9,9 @@ export interface DetectionsTableProps {
   tagToDetections: TagToDetections
 }
 
-export const DetectionsTable = (props: DetectionsTableProps) => {
+export const DetectionsTable: FunctionComponent<DetectionsTableProps> = (
+  props: DetectionsTableProps,
+) => {
   const { tagToDetections } = props
   return (
     <>

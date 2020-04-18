@@ -9,12 +9,10 @@ import {
   DetectionMessage,
 } from '../interfaces/atlas-message-structure'
 import { WebSocketConnection } from './web-socket-connection'
-import { getTagFeature } from '../helpers/map-utils'
 import {
   AtlasServerAddress,
   MessageClassName,
 } from '../constants/atlas-constants'
-import { Feature } from 'ol'
 import { AppState } from '../components/app'
 
 export class AtlasConnection {
