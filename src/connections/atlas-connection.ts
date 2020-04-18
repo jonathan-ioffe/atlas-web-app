@@ -20,7 +20,11 @@ export class AtlasConnection {
   private _setStateByKey: (key: keyof AppState, value: any) => void
   private _getStateByKey: (key: keyof AppState) => any
   private _setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void
-  private _addTagLocalization: (tagId: number, tagFeature: Coordinate) => void
+  private _addTagLocalization: (
+    tagId: number,
+    localizationTime: number,
+    tagFeature: Coordinate,
+  ) => void
 
   onConnectionOpen = () => {
     let msg = JSON.stringify({
@@ -56,7 +60,7 @@ export class AtlasConnection {
         //   localizationMsg.y,
         //   localizationMsg.z,
         // ])
-        this._addTagLocalization(localizationMsg.tagUid % 1e6, [
+        this._addTagLocalization(localizationMsg.tagUid, localizationMsg.time, [
           localizationMsg.x,
           localizationMsg.y,
         ])
@@ -98,7 +102,11 @@ export class AtlasConnection {
     setStateByKey: (key: keyof AppState, value: any) => void,
     getStateByKey: (key: keyof AppState) => any,
     setUserAuthCookie: (userAuth: UserAuthenticationRequest) => void,
-    addTagFeature: (tagId: number, tagFeature: Coordinate) => void,
+    addTagLocalization: (
+      tagId: number,
+      localizationTime: number,
+      tagFeature: Coordinate,
+    ) => void,
   ) {
     this._connectionObject = new WebSocketConnection(
       AtlasServerAddress,
@@ -108,6 +116,6 @@ export class AtlasConnection {
     this._setStateByKey = setStateByKey
     this._getStateByKey = getStateByKey
     this._setUserAuthCookie = setUserAuthCookie
-    this._addTagLocalization = addTagFeature
+    this._addTagLocalization = addTagLocalization
   }
 }

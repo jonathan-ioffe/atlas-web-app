@@ -3,7 +3,7 @@ import { TagRowInfo, TagDetectionRow } from './row'
 import { compareStringsAsNumber } from '../../helpers/comparators'
 import './style.css'
 
-export type TagToDetections = { [tagUid: number]: TagRowInfo[] }
+export type TagToDetections = { [tagUid: number]: {rowInfo: TagRowInfo[], lastLocalization?: number} }
 
 export interface DetectionsTableProps {
   tagToDetections: TagToDetections
@@ -22,7 +22,8 @@ export const DetectionsTable: FunctionComponent<DetectionsTableProps> = (
           <thead>
             <tr>
               <th scope='col'>Tag ID</th>
-              <th scope='col'>Last Detection</th>
+              <th scope='col'>Last Detected</th>
+              <th scope='col'>Last Localized</th>
               <th scope='col'>Detections</th>
             </tr>
           </thead>
@@ -33,7 +34,8 @@ export const DetectionsTable: FunctionComponent<DetectionsTableProps> = (
                 <TagDetectionRow
                   key={tagId}
                   tagId={Number(tagId)}
-                  tagRowInfo={tagToDetections[Number(tagId)]}
+                  tagRowInfo={tagToDetections[Number(tagId)].rowInfo}
+                  lastLocalization={tagToDetections[Number(tagId)].lastLocalization}
                 />
               ))}
           </tbody>

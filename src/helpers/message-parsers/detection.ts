@@ -1,8 +1,8 @@
-import { NumOfBasestationsPerTag } from '../../constants/app-constants';
+import { NumOfBasestationsPerTag } from '../../constants/app-constants'
 import { TagToDetections } from '../../components/table/table'
 import { DetectionMessage } from '../../interfaces/atlas-message-structure'
 import { BaseStationInfo } from '../../interfaces/base-stations-structure'
-import { TagRowInfo } from '../../components/table/row';
+import { TagRowInfo } from '../../components/table/row'
 
 export const parseDetectionMessage = (
   detectionMsg: DetectionMessage,
@@ -23,23 +23,23 @@ export const parseDetectionMessage = (
 
   if (tagToDetections.hasOwnProperty(tagUid)) {
     let baseStationAlreadyExists = false
-    for (let i = 0; i < tagToDetections[tagUid].length; i++) {
-      const element = tagToDetections[tagUid][i]
+    for (let i = 0; i < tagToDetections[tagUid].rowInfo.length; i++) {
+      const element = tagToDetections[tagUid].rowInfo[i]
       if (element['baseStationNum'] === currBaseStationDoc['baseStationNum']) {
-        tagToDetections[tagUid][i] = currBaseStationDoc
+        tagToDetections[tagUid].rowInfo[i] = currBaseStationDoc
         baseStationAlreadyExists = true
         break
       }
     }
     if (!baseStationAlreadyExists) {
-      if (tagToDetections[tagUid].length >= NumOfBasestationsPerTag) {
-        tagToDetections[tagUid].shift()
+      if (tagToDetections[tagUid].rowInfo.length >= NumOfBasestationsPerTag) {
+        tagToDetections[tagUid].rowInfo.shift()
       }
-      tagToDetections[tagUid].push(currBaseStationDoc)
+      tagToDetections[tagUid].rowInfo.push(currBaseStationDoc)
     }
   } else {
-    tagToDetections[tagUid] = []
-    tagToDetections[tagUid].push(currBaseStationDoc)
+    tagToDetections[tagUid] = { rowInfo: [] }
+    tagToDetections[tagUid].rowInfo.push(currBaseStationDoc)
   }
 
   return tagToDetections

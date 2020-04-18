@@ -24,10 +24,11 @@ export const getFeaturesListOfBaseStations = (
     })
     const currStyle = new Style({
       image: new Circle({
-        radius: 8,
+        radius: 9,
         fill: new Fill({
           color: '#49ADDF',
         }),
+        stroke: new Stroke({ color: '#000000' }),
       }),
       text: new Text({
         text: currBaseStation.id.toString(),
@@ -62,8 +63,9 @@ export const locationsByTagsToCombinedFeatureArray = (tagToLocations: {
       image: new Circle({
         radius: 3,
         fill: new Fill({
-          color: '#000000',
+          color: '#317bfa',
         }),
+        stroke: new Stroke({ color: '#000000' }),
       }),
     })
     const latestStyle = baseStyle.clone()

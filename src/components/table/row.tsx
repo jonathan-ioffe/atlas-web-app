@@ -13,6 +13,7 @@ export interface TagRowInfo {
 export interface TagDetectionRowProps {
   tagId: Number
   tagRowInfo: TagRowInfo[]
+  lastLocalization?: number
 }
 
 export const TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
@@ -22,15 +23,19 @@ export const TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
     $('[data-toggle="tooltip"]').tooltip()
   }, [props])
 
-  const { tagId, tagRowInfo } = props
-  let lastDetectionTime = getElapsedTime(
-    tagRowInfo[tagRowInfo.length - 1].lastDetection,
-  )
+  const { tagId, tagRowInfo, lastLocalization } = props
+  const latestEntry = tagRowInfo[tagRowInfo.length - 1]
+  const lastDetectionTime = getElapsedTime(latestEntry.lastDetection)
+  const lastLocalizationTime = lastLocalization
+    ? getElapsedTime(lastLocalization)
+    : '--'
   return (
     <tr>
       <td>{tagId}</td>
+      <td>{lastDetectionTime <= 0 ? 0 : lastDetectionTime}s</td>
       <td>
-        {lastDetectionTime <= 0 ? 0 : lastDetectionTime}s
+        {lastLocalizationTime <= 0 ? 0 : lastLocalizationTime}
+        {typeof lastLocalizationTime === 'string' ? '' : 's'}
       </td>
       <td>
         {tagRowInfo.sort(compareTagsByLastDetection).map((item: TagRowInfo) => (
@@ -39,9 +44,11 @@ export const TagDetectionRow: FunctionComponent<TagDetectionRowProps> = (
             key={item.baseStationNum}
             data-toggle='tooltip'
             data-placement='top'
-            title={`SNR: ${item.baseStationInfo.snr} | ${getElapsedTime(
-              item.baseStationInfo.detectionTime,
-            )}s ago`}
+            title={`BaseStation #${
+              item.baseStationNum
+            } | Tag: ${tagId} | SNR: ${
+              item.baseStationInfo.snr
+            } | ${getElapsedTime(item.baseStationInfo.detectionTime)}s ago`}
           >
             {item.baseStationNum}
           </span>

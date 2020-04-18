@@ -76,7 +76,7 @@ class App extends Component<ReactCookieProps, AppState> {
       this.setStateByKey,
       this.getStateByKey,
       this.setUserAuthToCookie,
-      this.addTagLocation,
+      this.addTagLocalization,
     )
     this.setState({ atlasConnection: atlasConnection }, () => {
       let storedCookie = this.getUserAuthFromCookies()
@@ -105,8 +105,19 @@ class App extends Component<ReactCookieProps, AppState> {
     return this.state[key]
   }
 
-  addTagLocation = (tagId: number, tagLocation: Coordinate) => {
-    const { tagToLocations } = this.state
+  addTagLocalization = (
+    tagId: number,
+    localizationTime: number,
+    tagLocation: Coordinate,
+  ) => {
+    const { tagToLocations, tagToDetections } = this.state
+
+    if (Object.keys(tagToDetections).includes(tagId.toString())) {
+      tagToDetections[tagId].lastLocalization = localizationTime
+      this.setState({ tagToDetections: tagToDetections })
+    }
+
+    tagId = tagId % 1e6
     if (Object.keys(tagToLocations).includes(tagId.toString())) {
       if (tagToLocations[tagId].length >= NumOfLocalizationsPerTag)
         tagToLocations[tagId].shift()
@@ -180,7 +191,7 @@ class App extends Component<ReactCookieProps, AppState> {
         </BrowserView>
         <MobileView>
           <Carousel showStatus={false} showThumbs={false} dynamicHeight>
-            <div>
+            <div className='w-auto'>
               <DetectionsTable tagToDetections={tagToDetections} />
             </div>
             <div>
@@ -201,7 +212,7 @@ class App extends Component<ReactCookieProps, AppState> {
   loginPage() {
     return (
       <div className='m-2'>
-        <span className="mr-2">To proceed: </span>
+        <span className='mr-2'>To proceed: </span>
         <GoogleLogin
           clientId={GoogleApiClientId}
           buttonText='Login'
