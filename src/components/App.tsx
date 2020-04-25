@@ -3,7 +3,7 @@ import '../styles/bootstrap.min.css'
 import 'popper.js'
 import 'bootstrap'
 import { Navbar } from './navbar'
-import { DetectionsTable, TagToDetections } from './table'
+import { TagToDetections } from './tables/detections-table'
 import {
   GoogleLogin,
   GoogleLoginResponse,
@@ -29,6 +29,7 @@ import '../styles/carousel-override.css'
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css'
 import Loader from 'react-loader-spinner'
 import { Coordinate } from 'ol/coordinate'
+import { TablesNav } from './tables/tables-nav'
 
 const determineIsLoginResponse = (
   toBeDetermined: GoogleLoginResponse | GoogleLoginResponseOffline,
@@ -178,7 +179,7 @@ class App extends Component<ReactCookieProps, AppState> {
         <BrowserView>
           <div className='row'>
             <div className='col-3 mr-auto'>
-              <DetectionsTable tagToDetections={tagToDetections} />
+              <TablesNav tagToDetections={tagToDetections} />
             </div>
             <MapView
               mapCenter={baseStationsCenter}
@@ -192,7 +193,7 @@ class App extends Component<ReactCookieProps, AppState> {
         <MobileView>
           <Carousel showStatus={false} showThumbs={false} dynamicHeight>
             <div className='w-auto'>
-              <DetectionsTable tagToDetections={tagToDetections} />
+              <TablesNav tagToDetections={tagToDetections} />
             </div>
             <div>
               <MapView

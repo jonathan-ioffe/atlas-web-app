@@ -8,3 +8,7 @@ td {
   padding: 0.5rem;
   border: 0.2rem solid #eee;
 }
+
+.clickable-row:hover {
+  cursor: pointer;
+}

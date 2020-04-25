@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { TagRowInfo, TagDetectionRow } from './row'
-import { compareStringsAsNumber } from '../../helpers/comparators'
-import './style.css'
+import { compareStringsAsNumber } from '../../../helpers/comparators'
+import '../style.css'
 
 export type TagToDetections = { [tagUid: number]: {rowInfo: TagRowInfo[], lastLocalization?: number} }
 
@@ -18,7 +18,7 @@ export const DetectionsTable: FunctionComponent<DetectionsTableProps> = (
       {Object.keys(tagToDetections).length <= 0 ? (
         <p className='text-center'>No tags detected!</p>
       ) : (
-        <table className='table-striped table-hover'>
+        <table className='table-striped table-hover mt-1'>
           <thead>
             <tr>
               <th scope='col'>Tag ID</th>

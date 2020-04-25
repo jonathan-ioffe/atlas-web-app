@@ -1,3 +1,4 @@
+import { TagSummaryMessage } from './../interfaces/atlas-message-structure';
 import { Coordinate } from 'ol/coordinate'
 import { parseSystemStructureMessage } from '../helpers/message-parsers/system-structure'
 import { parseDetectionMessage } from '../helpers/message-parsers/detection'
@@ -13,7 +14,7 @@ import {
   AtlasServerAddress,
   MessageClassName,
 } from '../constants/atlas-constants'
-import { AppState } from '../components/app'
+import { AppState } from '../components/App'
 
 export class AtlasConnection {
   private _connectionObject: WebSocketConnection
@@ -83,9 +84,9 @@ export class AtlasConnection {
         this._setStateByKey('baseStationsCenter', baseStationsCenter)
         break
       case MessageClassName.TagSummary:
+        const tagSummaryMsg = msg as TagSummaryMessage
         break
       default:
-        console.debug(`Received: ${JSON.stringify(msg)}`)
         break
     }
   }

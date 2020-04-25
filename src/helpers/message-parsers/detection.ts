@@ -1,8 +1,7 @@
-import { NumOfBasestationsPerTag } from '../../constants/app-constants'
-import { TagToDetections } from '../../components/table/table'
+import { TagToDetections } from '../../components/tables/detections-table/table'
 import { DetectionMessage } from '../../interfaces/atlas-message-structure'
 import { BaseStationInfo } from '../../interfaces/base-stations-structure'
-import { TagRowInfo } from '../../components/table/row'
+import { TagRowInfo } from '../../components/tables/detections-table/row'
 
 export const parseDetectionMessage = (
   detectionMsg: DetectionMessage,
@@ -32,9 +31,6 @@ export const parseDetectionMessage = (
       }
     }
     if (!baseStationAlreadyExists) {
-      if (tagToDetections[tagUid].rowInfo.length >= NumOfBasestationsPerTag) {
-        tagToDetections[tagUid].rowInfo.shift()
-      }
       tagToDetections[tagUid].rowInfo.push(currBaseStationDoc)
     }
   } else {

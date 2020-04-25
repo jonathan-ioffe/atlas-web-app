@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './components/app'
+import App from './components/App'
 import { CookiesProvider } from 'react-cookie'
 import * as serviceWorker from './serviceWorker'
 

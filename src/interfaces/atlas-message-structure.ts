@@ -46,3 +46,16 @@ export interface DetectionMessage {
   time: number
   txUid: number
 }
+
+export interface TagSummaryMessage {
+  basestation: number
+  reportPeriod: number
+  searchTime: number
+  searchingDetection: number
+  searchingNoDetection: number
+  tagUid: number
+  time: number
+  trackingDetection: number
+  trackingNoDetection: number
+  trackingTooLate: number
+}
