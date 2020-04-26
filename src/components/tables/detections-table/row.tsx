@@ -13,7 +13,7 @@ export interface TagRowInfo {
 }
 
 export interface TagDetectionRowProps {
-  tagId: Number
+  tagId: number
   tagRowInfo: TagRowInfo[]
   lastLocalization?: number
 }

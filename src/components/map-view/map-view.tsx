@@ -90,7 +90,7 @@ export class MapView extends Component<MapViewProps, MapViewState> {
   render() {
     return (
       <div
-        className={`map-view ${isMobile ? '' : 'col-9 col-xs-3 ml-auto'}`}
+        className={`map-view ${isMobile ? '' : 'col-8 col-xs-3 ml-auto'}`}
         id={this.mapDivId}
       ></div>
     )

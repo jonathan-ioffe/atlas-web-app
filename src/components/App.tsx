@@ -30,6 +30,7 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css'
 import Loader from 'react-loader-spinner'
 import { Coordinate } from 'ol/coordinate'
 import { TablesNav } from './tables/tables-nav'
+import { BaseStationToTags } from './tables/basestations-table'
 
 const determineIsLoginResponse = (
   toBeDetermined: GoogleLoginResponse | GoogleLoginResponseOffline,
@@ -49,6 +50,7 @@ export interface AppState {
   tagToLocations: { [tagId: number]: Coordinate[] }
   baseStationsCenter: number[]
   tagToDetections: TagToDetections
+  baseStationToTags: BaseStationToTags
 }
 
 class App extends Component<ReactCookieProps, AppState> {
@@ -67,6 +69,7 @@ class App extends Component<ReactCookieProps, AppState> {
       tagsFeatures: [],
       tagToLocations: {},
       tagToDetections: {},
+      baseStationToTags: {},
     }
   }
 
@@ -173,13 +176,17 @@ class App extends Component<ReactCookieProps, AppState> {
       baseStationsFeatures,
       tagToLocations,
       tagToDetections,
+      baseStationToTags,
     } = this.state
     return (
       <>
         <BrowserView>
           <div className='row'>
-            <div className='col-3 mr-auto'>
-              <TablesNav tagToDetections={tagToDetections} />
+            <div className='col-4'>
+              <TablesNav
+                tagToDetections={tagToDetections}
+                baseStationToTags={baseStationToTags}
+              />
             </div>
             <MapView
               mapCenter={baseStationsCenter}
@@ -193,7 +200,10 @@ class App extends Component<ReactCookieProps, AppState> {
         <MobileView>
           <Carousel showStatus={false} showThumbs={false} dynamicHeight>
             <div className='w-auto'>
-              <TablesNav tagToDetections={tagToDetections} />
+              <TablesNav
+                tagToDetections={tagToDetections}
+                baseStationToTags={baseStationToTags}
+              />
             </div>
             <div>
               <MapView

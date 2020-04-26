@@ -9,6 +9,27 @@ td {
   border: 0.2rem solid #eee;
 }
 
+.wrap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 1rem;
+}
+
 .clickable-row:hover {
   cursor: pointer;
+}
+
+.custom-scrollbar {
+  position: relative;
+  height: 90vh;
+  overflow: auto;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+
+@media all and (max-width: 500px) {
+  .modal-backdrop {
+    display: none;
+  }
 }

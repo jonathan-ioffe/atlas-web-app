@@ -1,14 +1,16 @@
 import React, { FunctionComponent } from 'react'
 import { TagToDetections, DetectionsTable } from './detections-table'
+import { BaseStationToTags, BaseStationsTable } from './basestations-table'
 
 interface TablesNavProps {
   tagToDetections: TagToDetections
+  baseStationToTags: BaseStationToTags
 }
 
 export const TablesNav: FunctionComponent<TablesNavProps> = (props) => {
-  const { tagToDetections } = props
+  const { tagToDetections, baseStationToTags } = props
   return (
-    <div className='m-1'>
+    <div className='m-1 table-wrapper-scroll-y custom-scrollbar'>
       <ul className='nav nav-pills' id='myTab' role='tablist'>
         <li className='nav-item'>
           <a
@@ -53,7 +55,7 @@ export const TablesNav: FunctionComponent<TablesNavProps> = (props) => {
           role='tabpanel'
           aria-labelledby='pills-basestations-tab'
         >
-          hi
+          <BaseStationsTable basestationToTags={baseStationToTags} />
         </div>
       </div>
     </div>

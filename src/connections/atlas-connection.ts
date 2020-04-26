@@ -15,6 +15,7 @@ import {
   MessageClassName,
 } from '../constants/atlas-constants'
 import { AppState } from '../components/App'
+import { parseTagSummaryMessage } from '../helpers/message-parsers/tag-summary';
 
 export class AtlasConnection {
   private _connectionObject: WebSocketConnection
@@ -85,6 +86,12 @@ export class AtlasConnection {
         break
       case MessageClassName.TagSummary:
         const tagSummaryMsg = msg as TagSummaryMessage
+        let baseStationToTags = parseTagSummaryMessage(
+          tagSummaryMsg,
+          this._getStateByKey('baseStationToTags'),
+        )
+        this._setStateByKey('baseStationToTags', baseStationToTags)
+        
         break
       default:
         break

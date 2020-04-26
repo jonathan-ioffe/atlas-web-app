@@ -6,7 +6,7 @@ import { compareTagsByBasestationNumber } from '../../../helpers/comparators'
 export const TAG_MODAL_ID = 'tagModal'
 
 export interface TagModalProps {
-  tagId: Number
+  tagId: number
   tagRowInfo: TagRowInfo[]
 }
 
