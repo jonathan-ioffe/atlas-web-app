@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { TagToDetections, DetectionsTable } from './detections-table'
 import { BaseStationToTags, BaseStationsTable } from './basestations-table'
+import { NoDetectionsTable } from './no-detections-table'
 
 interface TablesNavProps {
   tagToDetections: TagToDetections
@@ -36,7 +37,20 @@ export const TablesNav: FunctionComponent<TablesNavProps> = (props) => {
             aria-controls='pills-basestations'
             aria-selected='false'
           >
-            Basestations
+            Basestations Health
+          </a>
+        </li>
+        <li className='nav-item'>
+          <a
+            className='nav-link'
+            id='pills-nodetections-tab'
+            data-toggle='pill'
+            href='#pills-nodetections'
+            role='tab'
+            aria-controls='pills-nodetections'
+            aria-selected='false'
+          >
+            Tags Not Detected
           </a>
         </li>
       </ul>
@@ -58,6 +72,17 @@ export const TablesNav: FunctionComponent<TablesNavProps> = (props) => {
         >
           <BaseStationsTable 
             basestationToTags={baseStationToTags} 
+            tagsLookedForByBasestations={tagsLookedForByBasestations}
+          />
+        </div>
+        <div
+          className='tab-pane fade'
+          id='pills-nodetections'
+          role='tabpanel'
+          aria-labelledby='pills-nodetections-tab'
+        >
+          <NoDetectionsTable 
+            detectedTags={Object.keys(tagToDetections).map((tagId) => (Number(tagId)))}
             tagsLookedForByBasestations={tagsLookedForByBasestations}
           />
         </div>
