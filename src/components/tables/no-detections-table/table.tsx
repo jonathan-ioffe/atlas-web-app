@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react'
 import { TagNoDetectionRow } from './row'
-import { compareStringsAsNumber } from '../../../helpers/comparators'
 import '../style.css'
 import { getAMinusBItems } from '../../../helpers/arrays'
 

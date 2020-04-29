@@ -38,7 +38,6 @@ export class AtlasConnection {
   }
 
   receiveMessage = (evt: MessageEvent) => {
-    // listen to data sent from the websocket server
     const msg = JSON.parse(evt.data)
     switch (msg.class) {
       case MessageClassName.UserAuthResponse:
@@ -57,11 +56,6 @@ export class AtlasConnection {
         break
       case MessageClassName.Localization:
         const localizationMsg = msg as LocalizationMessage
-        // let currTagFeature = getTagFeature([
-        //   localizationMsg.x,
-        //   localizationMsg.y,
-        //   localizationMsg.z,
-        // ])
         this._addTagLocalization(localizationMsg.tagUid, localizationMsg.time, [
           localizationMsg.x,
           localizationMsg.y,
