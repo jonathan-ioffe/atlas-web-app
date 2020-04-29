@@ -22,7 +22,7 @@ export const BaseStationsTable: FunctionComponent<BaseStationsTableProps> = (
           <thead>
             <tr>
               <th scope='col'>Base Station #</th>
-              <th scope='col'>Searching Tags</th>
+              <th scope='col'>Searching for Tags</th>
             </tr>
           </thead>
           <tbody>

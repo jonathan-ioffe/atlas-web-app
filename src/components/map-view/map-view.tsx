@@ -8,6 +8,8 @@ import { isMobile } from 'react-device-detect'
 import { MapUpdateIntervalSeconds } from '../../constants/app-constants'
 import { Feature } from 'ol'
 import { Coordinate } from 'ol/coordinate'
+import { ReactComponent as EnabledHomeIcon } from '../../assets/home-enabled.svg'
+import { ReactComponent as DisabledHomeIcon } from '../../assets/home-disabled.svg'
 import 'ol/ol.css'
 import './style.css'
 
@@ -21,7 +23,7 @@ export interface MapViewState {
   map: Map
   mapCenterDefined: boolean
   featuresDefined: boolean
-  tagsLayer?: VectorLayer
+  isBasestationLayerVisible: boolean
 }
 
 export class MapView extends Component<MapViewProps, MapViewState> {
@@ -30,6 +32,7 @@ export class MapView extends Component<MapViewProps, MapViewState> {
     this.state = {
       mapCenterDefined: false,
       featuresDefined: false,
+      isBasestationLayerVisible: true,
       map: new Map({
         target: 'map',
         layers: [new TileLayer({ source: new OSM() })],
@@ -44,6 +47,7 @@ export class MapView extends Component<MapViewProps, MapViewState> {
   lastUpdateDate = new Date()
   mapDivId = `map-${Math.random()}`
   tagsLayer: VectorLayer | null = null
+  baseStationsLayer: VectorLayer | null = null
 
   componentDidMount() {
     const { map } = this.state
@@ -51,13 +55,22 @@ export class MapView extends Component<MapViewProps, MapViewState> {
   }
 
   shouldComponentUpdate() {
-    const { mapCenterDefined, featuresDefined } = this.state
+    const {
+      mapCenterDefined,
+      featuresDefined,
+      isBasestationLayerVisible,
+    } = this.state
     const now = new Date()
     var seconds = (now.getTime() - this.lastUpdateDate.getTime()) / 1000
+    let currBaseStationToggleEnabled = this.baseStationsLayer?.getVisible()
+    const isToggledBaseStationLayer =
+      (currBaseStationToggleEnabled && !isBasestationLayerVisible) ||
+      (!currBaseStationToggleEnabled && isBasestationLayerVisible)
     return (
       !mapCenterDefined ||
       !featuresDefined ||
-      seconds >= MapUpdateIntervalSeconds
+      seconds >= MapUpdateIntervalSeconds ||
+      isToggledBaseStationLayer
     )
   }
   componentDidUpdate() {
@@ -68,13 +81,12 @@ export class MapView extends Component<MapViewProps, MapViewState> {
       this.setState({ mapCenterDefined: true })
     }
     if (!featuresDefined) {
-      map.addLayer(
-        new VectorLayer({
-          source: new VectorSource({
-            features: baseStationsFeatures,
-          }),
+      this.baseStationsLayer = new VectorLayer({
+        source: new VectorSource({
+          features: baseStationsFeatures,
         }),
-      )
+      })
+      map.addLayer(this.baseStationsLayer)
       this.setState({ featuresDefined: true })
     }
     const currTagsLayer = new VectorLayer({
@@ -88,11 +100,27 @@ export class MapView extends Component<MapViewProps, MapViewState> {
   }
 
   render() {
+    const { isBasestationLayerVisible } = this.state
     return (
       <div
         className={`map-view ${isMobile ? '' : 'col-8 col-xs-3 ml-auto'}`}
         id={this.mapDivId}
-      ></div>
+      >
+        <button
+          className='btn btn-light b-layer-button'
+          onClick={() => {
+            const currVisibilty = this.baseStationsLayer?.getVisible()
+            this.baseStationsLayer?.setVisible(!currVisibilty)
+            this.setState({isBasestationLayerVisible: this.baseStationsLayer? this.baseStationsLayer.getVisible(): false})
+          }}
+        >
+          {isBasestationLayerVisible ? (
+            <EnabledHomeIcon />
+          ) : (
+            <DisabledHomeIcon className='logo' />
+          )}
+        </button>
+      </div>
     )
   }
 }
