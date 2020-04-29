@@ -5,10 +5,11 @@ import { BaseStationToTags, BaseStationsTable } from './basestations-table'
 interface TablesNavProps {
   tagToDetections: TagToDetections
   baseStationToTags: BaseStationToTags
+  tagsLookedForByBasestations: number[]
 }
 
 export const TablesNav: FunctionComponent<TablesNavProps> = (props) => {
-  const { tagToDetections, baseStationToTags } = props
+  const { tagToDetections, baseStationToTags, tagsLookedForByBasestations } = props
   return (
     <div className='m-1 table-wrapper-scroll-y custom-scrollbar'>
       <ul className='nav nav-pills' id='myTab' role='tablist'>
@@ -55,7 +56,10 @@ export const TablesNav: FunctionComponent<TablesNavProps> = (props) => {
           role='tabpanel'
           aria-labelledby='pills-basestations-tab'
         >
-          <BaseStationsTable basestationToTags={baseStationToTags} />
+          <BaseStationsTable 
+            basestationToTags={baseStationToTags} 
+            tagsLookedForByBasestations={tagsLookedForByBasestations}
+          />
         </div>
       </div>
     </div>

@@ -86,12 +86,13 @@ export class AtlasConnection {
         break
       case MessageClassName.TagSummary:
         const tagSummaryMsg = msg as TagSummaryMessage
-        let baseStationToTags = parseTagSummaryMessage(
+        const {baseStationToTags, tagsLookedForByBasestations} = parseTagSummaryMessage(
           tagSummaryMsg,
           this._getStateByKey('baseStationToTags'),
+          this._getStateByKey('tagsLookedForByBasestations'),
         )
         this._setStateByKey('baseStationToTags', baseStationToTags)
-        
+        this._setStateByKey('tagsLookedForByBasestations', tagsLookedForByBasestations)
         break
       default:
         break

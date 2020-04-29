@@ -15,11 +15,13 @@ export const BaseStationsTableRow: FunctionComponent<BaseStationsTableRowProps> 
       <td>{baseStationNum}</td>
       <td>
         <div className='wrap'>
-          {searchingTags.sort().map((tagUid) => (
+          {searchingTags.length > 0 
+          ? searchingTags.sort().map((tagUid) => (
             <React.Fragment>
               <small>{tagUid}</small>
             </React.Fragment>
-          ))}
+          ))
+          : '✔️'}
         </div>
       </td>
     </tr>

@@ -51,6 +51,7 @@ export interface AppState {
   baseStationsCenter: number[]
   tagToDetections: TagToDetections
   baseStationToTags: BaseStationToTags
+  tagsLookedForByBasestations: number[]
 }
 
 class App extends Component<ReactCookieProps, AppState> {
@@ -70,6 +71,7 @@ class App extends Component<ReactCookieProps, AppState> {
       tagToLocations: {},
       tagToDetections: {},
       baseStationToTags: {},
+      tagsLookedForByBasestations: []
     }
   }
 
@@ -177,6 +179,7 @@ class App extends Component<ReactCookieProps, AppState> {
       tagToLocations,
       tagToDetections,
       baseStationToTags,
+      tagsLookedForByBasestations
     } = this.state
     return (
       <>
@@ -186,6 +189,7 @@ class App extends Component<ReactCookieProps, AppState> {
               <TablesNav
                 tagToDetections={tagToDetections}
                 baseStationToTags={baseStationToTags}
+                tagsLookedForByBasestations={tagsLookedForByBasestations}
               />
             </div>
             <MapView
@@ -203,6 +207,7 @@ class App extends Component<ReactCookieProps, AppState> {
               <TablesNav
                 tagToDetections={tagToDetections}
                 baseStationToTags={baseStationToTags}
+                tagsLookedForByBasestations={tagsLookedForByBasestations}
               />
             </div>
             <div>

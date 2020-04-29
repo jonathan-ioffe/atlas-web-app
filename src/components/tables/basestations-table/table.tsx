@@ -2,17 +2,20 @@ import React, { FunctionComponent } from 'react'
 import '../style.css'
 import { compareStringsAsNumber } from '../../../helpers/comparators'
 import { BaseStationsTableRow } from './row'
+import { getAMinusBItems } from '../../../helpers/arrays'
 
 export type BaseStationToTags = { [basestation: number]: {searchingTags: number[]} }
 
 export interface BaseStationsTableProps {
-  basestationToTags: BaseStationToTags
+  basestationToTags: BaseStationToTags,
+  tagsLookedForByBasestations: number[]
 }
 
 export const BaseStationsTable: FunctionComponent<BaseStationsTableProps> = (
   props: BaseStationsTableProps,
 ) => {
-  const { basestationToTags } = props
+  const { basestationToTags, tagsLookedForByBasestations } = props
+
   return (
     <>
       {Object.keys(basestationToTags).length <= 0 ? (
@@ -22,7 +25,7 @@ export const BaseStationsTable: FunctionComponent<BaseStationsTableProps> = (
           <thead>
             <tr>
               <th scope='col'>Base Station #</th>
-              <th scope='col'>Searching for Tags</th>
+              <th scope='col'>Tags Not Looking For</th>
             </tr>
           </thead>
           <tbody>
@@ -32,7 +35,7 @@ export const BaseStationsTable: FunctionComponent<BaseStationsTableProps> = (
                 <BaseStationsTableRow
                   key={baseStationNum}
                   baseStationNum={Number(baseStationNum)}
-                  searchingTags={basestationToTags[Number(baseStationNum)].searchingTags}
+                  searchingTags={getAMinusBItems(tagsLookedForByBasestations, basestationToTags[Number(baseStationNum)].searchingTags)}
                 />
               ))}
           </tbody>

@@ -1,0 +1,1 @@
+export const getAMinusBItems = (a: number[], b: number[]) => (a.filter(x => !b.includes(x)))
