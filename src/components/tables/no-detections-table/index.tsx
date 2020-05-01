@@ -1,1 +1,0 @@
-export { NoDetectionsTable } from './table'

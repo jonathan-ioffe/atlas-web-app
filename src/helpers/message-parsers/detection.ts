@@ -1,7 +1,7 @@
-import { TagToDetections } from '../../components/tables/detections-table/table'
 import { DetectionMessage } from '../../interfaces/atlas-message-structure'
 import { BaseStationInfo } from '../../interfaces/base-stations-structure'
 import { TagRowInfo } from '../../components/tables/detections-table/row'
+import { TagToDetections } from '../../interfaces/tags-structure'
 
 export const parseDetectionMessage = (
   detectionMsg: DetectionMessage,

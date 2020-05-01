@@ -3,9 +3,7 @@ import '../styles/bootstrap.min.css'
 import 'popper.js'
 import 'bootstrap'
 import { Navbar } from './navbar'
-import { TagToDetections } from './tables/detections-table'
 import {
-  GoogleLogin,
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login'
@@ -14,32 +12,20 @@ import { withCookies, Cookies, ReactCookieProps } from 'react-cookie'
 import { AtlasConnection } from '../connections/atlas-connection'
 import { MapView } from './map-view'
 import { UserAuthenticationRequest } from '../interfaces/atlas-message-structure'
-import {
-  CookieName,
-  GoogleApiClientId,
-  NumOfLocalizationsPerTag,
-} from '../constants/app-constants'
 import { Feature } from 'ol'
 import { locationsByTagsToCombinedFeatureArray } from '../helpers/map-utils'
 import { BrowserView, MobileView } from 'react-device-detect'
-
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { Carousel } from 'react-responsive-carousel'
 import '../styles/carousel-override.css'
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css'
-import Loader from 'react-loader-spinner'
-import { Coordinate } from 'ol/coordinate'
 import { TablesNav } from './tables/tables-nav'
-import { BaseStationToTags } from './tables/basestations-table'
-
-const determineIsLoginResponse = (
-  toBeDetermined: GoogleLoginResponse | GoogleLoginResponseOffline,
-): toBeDetermined is GoogleLoginResponse => {
-  if ((toBeDetermined as GoogleLoginResponse).profileObj) {
-    return true
-  }
-  return false
-}
+import { BaseStationToTags } from '../interfaces/base-stations-structure'
+import { LoginView } from './login-view'
+import { LoadingView } from './loading-view'
+import { determineIsLoginResponse } from '../helpers/google-api'
+import { getUserAuthFromCookies, setUserAuthToCookie } from '../helpers/cookies'
+import { TagToDetections, TagToLocations } from '../interfaces/tags-structure'
 
 export interface AppState {
   isLoggedIn: boolean
@@ -47,7 +33,7 @@ export interface AppState {
   atlasConnection?: AtlasConnection
   baseStationsFeatures: Feature[]
   tagsFeatures: Feature[]
-  tagToLocations: { [tagId: number]: Coordinate[] }
+  tagToLocations: TagToLocations
   baseStationsCenter: number[]
   tagToDetections: TagToDetections
   baseStationToTags: BaseStationToTags
@@ -71,21 +57,24 @@ class App extends Component<ReactCookieProps, AppState> {
       tagToLocations: {},
       tagToDetections: {},
       baseStationToTags: {},
-      tagsLookedForByBasestations: []
+      tagsLookedForByBasestations: [],
     }
   }
 
   lastUpdateDate = new Date()
 
   componentDidMount() {
+    const { cookies } = this.props
+    const setCookiesAuth = (userAuth: UserAuthenticationRequest) => {
+      setUserAuthToCookie(cookies, userAuth)
+    }
     let atlasConnection = new AtlasConnection(
       this.setStateByKey,
       this.getStateByKey,
-      this.setUserAuthToCookie,
-      this.addTagLocalization,
+      setCookiesAuth,
     )
     this.setState({ atlasConnection: atlasConnection }, () => {
-      let storedCookie = this.getUserAuthFromCookies()
+      let storedCookie = getUserAuthFromCookies(cookies)
       if (storedCookie != null) {
         atlasConnection.authenticateUser(storedCookie)
       } else {
@@ -95,9 +84,10 @@ class App extends Component<ReactCookieProps, AppState> {
   }
 
   shouldComponentUpdate() {
+    const { isLoading } = this.state
     const now = new Date()
     var seconds = (now.getTime() - this.lastUpdateDate.getTime()) / 1000
-    return seconds >= 1
+    return seconds >= 1 || isLoading
   }
   componentDidUpdate() {
     this.lastUpdateDate = new Date()
@@ -109,49 +99,6 @@ class App extends Component<ReactCookieProps, AppState> {
 
   getStateByKey = (key: keyof AppState) => {
     return this.state[key]
-  }
-
-  addTagLocalization = (
-    tagId: number,
-    localizationTime: number,
-    tagLocation: Coordinate,
-  ) => {
-    const { tagToLocations, tagToDetections } = this.state
-
-    if (Object.keys(tagToDetections).includes(tagId.toString())) {
-      tagToDetections[tagId].lastLocalization = localizationTime
-      this.setState({ tagToDetections: tagToDetections })
-    }
-
-    tagId = tagId % 1e6
-    if (Object.keys(tagToLocations).includes(tagId.toString())) {
-      if (tagToLocations[tagId].length >= NumOfLocalizationsPerTag)
-        tagToLocations[tagId].shift()
-      tagToLocations[tagId].push(tagLocation)
-    } else {
-      tagToLocations[tagId] = [tagLocation]
-    }
-
-    this.setState({ tagToLocations: tagToLocations })
-  }
-
-  getUserAuthFromCookies(): UserAuthenticationRequest | null {
-    const { cookies } = this.props
-    if (cookies != null) {
-      return cookies.get(CookieName)
-    }
-    return null
-  }
-
-  setUserAuthToCookie = (userAuth: UserAuthenticationRequest) => {
-    const { cookies } = this.props
-    if (cookies != null) cookies.set(CookieName, userAuth)
-  }
-
-  removeUserAuthFromCookie() {
-    const { cookies } = this.props
-    if (cookies != null) cookies.remove(CookieName)
-    window.location.reload()
   }
 
   responseGoogle = (
@@ -179,7 +126,7 @@ class App extends Component<ReactCookieProps, AppState> {
       tagToLocations,
       tagToDetections,
       baseStationToTags,
-      tagsLookedForByBasestations
+      tagsLookedForByBasestations,
     } = this.state
     return (
       <>
@@ -225,34 +172,20 @@ class App extends Component<ReactCookieProps, AppState> {
     )
   }
 
-  loginPage() {
-    return (
-      <div className='m-2'>
-        <span className='mr-2'>To proceed: </span>
-        <GoogleLogin
-          clientId={GoogleApiClientId}
-          buttonText='Login'
-          onSuccess={this.responseGoogle}
-          onFailure={this.responseGoogle}
-          cookiePolicy={'single_host_origin'}
-        />
-      </div>
-    )
-  }
-
   render() {
     const { isLoggedIn, isLoading } = this.state
     return (
       <>
         <Navbar />
         {isLoading ? (
-          <div className='mt-2 text-center'>
-            <Loader type='ThreeDots' color='#49addf' />
-          </div>
+          <LoadingView />
         ) : isLoggedIn ? (
           this.mainPage()
         ) : (
-          this.loginPage()
+          <LoginView
+            loginSuccessCallback={this.responseGoogle}
+            loginFailureCallback={this.responseGoogle}
+          />
         )}
       </>
     )

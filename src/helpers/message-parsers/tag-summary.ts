@@ -1,5 +1,5 @@
 import { TagSummaryMessage } from '../../interfaces/atlas-message-structure'
-import { BaseStationToTags } from '../../components/tables/basestations-table'
+import { BaseStationToTags } from '../../interfaces/base-stations-structure'
 
 
 export interface ParseTagSummaryMessageReturnType {

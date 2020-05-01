@@ -1,9 +1,17 @@
 import React, { FunctionComponent } from 'react'
-import { TagRowInfo, TagDetectionRow } from './row'
+import { TagDetectionRow } from './row'
 import { compareStringsAsNumber } from '../../../helpers/comparators'
 import '../style.css'
+import { Table } from '../base-table/table'
+import { TableHeader } from '../base-table/table-header'
+import { TagToDetections } from '../../../interfaces/tags-structure'
 
-export type TagToDetections = { [tagUid: number]: {rowInfo: TagRowInfo[], lastLocalization?: number} }
+const HEADERS = [
+  'Tag ID',
+  'Last Detected',
+  'Last Localized',
+  'Detections'
+]
 
 export interface DetectionsTableProps {
   tagToDetections: TagToDetections
@@ -18,15 +26,8 @@ export const DetectionsTable: FunctionComponent<DetectionsTableProps> = (
       {Object.keys(tagToDetections).length <= 0 ? (
         <p className='text-center'>No tags detected!</p>
       ) : (
-        <table className='table-striped table-hover mt-1'>
-          <thead>
-            <tr>
-              <th scope='col'>Tag ID</th>
-              <th scope='col'>Last Detected</th>
-              <th scope='col'>Last Localized</th>
-              <th scope='col'>Detections</th>
-            </tr>
-          </thead>
+        <Table>
+          <TableHeader headers={HEADERS} />
           <tbody>
             {Object.keys(tagToDetections)
               .sort(compareStringsAsNumber)
@@ -35,11 +36,13 @@ export const DetectionsTable: FunctionComponent<DetectionsTableProps> = (
                   key={tagId}
                   tagId={Number(tagId)}
                   tagRowInfo={tagToDetections[Number(tagId)].rowInfo}
-                  lastLocalization={tagToDetections[Number(tagId)].lastLocalization}
+                  lastLocalization={
+                    tagToDetections[Number(tagId)].lastLocalization
+                  }
                 />
               ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </>
   )

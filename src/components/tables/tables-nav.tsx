@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from 'react'
-import { TagToDetections, DetectionsTable } from './detections-table'
-import { BaseStationToTags, BaseStationsTable } from './basestations-table'
-import { NoDetectionsTable } from './no-detections-table'
+import { DetectionsTable } from './detections-table/table'
+import { BaseStationsTable } from './basestations-table/table'
+import { NoDetectionsTable } from './no-detections-table/table'
+import { BaseStationToTags } from '../../interfaces/base-stations-structure'
+import { TagToDetections } from '../../interfaces/tags-structure'
 
 interface TablesNavProps {
   tagToDetections: TagToDetections

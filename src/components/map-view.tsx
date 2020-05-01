@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
+import { cx, css } from 'emotion'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import TileLayer from 'ol/layer/Tile'
 import OSM from 'ol/source/OSM'
 import { Map, View } from 'ol'
 import { isMobile } from 'react-device-detect'
-import { MapUpdateIntervalSeconds } from '../../constants/app-constants'
+import { MapUpdateIntervalSeconds } from '../constants/app-constants'
 import { Feature } from 'ol'
 import { Coordinate } from 'ol/coordinate'
-import { ReactComponent as EnabledHomeIcon } from '../../assets/home-enabled.svg'
-import { ReactComponent as DisabledHomeIcon } from '../../assets/home-disabled.svg'
+import { ReactComponent as EnabledHomeIcon } from '../assets/home-enabled.svg'
+import { ReactComponent as DisabledHomeIcon } from '../assets/home-disabled.svg'
 import 'ol/ol.css'
-import './style.css'
 
 export interface MapViewProps {
   mapCenter: Coordinate
@@ -103,15 +103,19 @@ export class MapView extends Component<MapViewProps, MapViewState> {
     const { isBasestationLayerVisible } = this.state
     return (
       <div
-        className={`map-view ${isMobile ? '' : 'col-8 col-xs-3 ml-auto'}`}
+        className={cx(mapView, isMobile ? '' : 'col-8 col-xs-3 ml-auto')}
         id={this.mapDivId}
       >
         <button
-          className='btn btn-light b-layer-button'
+          className={cx('btn', 'btn-light', stationsLayerButton)}
           onClick={() => {
             const currVisibilty = this.baseStationsLayer?.getVisible()
             this.baseStationsLayer?.setVisible(!currVisibilty)
-            this.setState({isBasestationLayerVisible: this.baseStationsLayer? this.baseStationsLayer.getVisible(): false})
+            this.setState({
+              isBasestationLayerVisible: this.baseStationsLayer
+                ? this.baseStationsLayer.getVisible()
+                : false,
+            })
           }}
         >
           {isBasestationLayerVisible ? (
@@ -124,3 +128,15 @@ export class MapView extends Component<MapViewProps, MapViewState> {
     )
   }
 }
+
+const mapView = css`
+  position: relative;
+  height: 90vh;
+`
+
+const stationsLayerButton = css`
+  position: absolute;
+  z-index: 1;
+  right: 2rem;
+  top: 1rem;
+`

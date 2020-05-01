@@ -10,3 +10,7 @@ export interface BaseStationInfo {
   snr: number
   detectionTime: number
 }
+
+export type BaseStationToTags = {
+  [basestation: number]: { searchingTags: number[] }
+}

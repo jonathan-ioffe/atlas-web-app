@@ -3,11 +3,17 @@ import '../style.css'
 import { compareStringsAsNumber } from '../../../helpers/comparators'
 import { BaseStationsTableRow } from './row'
 import { getAMinusBItems } from '../../../helpers/arrays'
+import { Table } from '../base-table/table'
+import { TableHeader } from '../base-table/table-header'
+import { BaseStationToTags } from '../../../interfaces/base-stations-structure'
 
-export type BaseStationToTags = { [basestation: number]: {searchingTags: number[]} }
+const HEADERS = [
+  'Base Station #',
+  'Tags Not Looking For'
+]
 
 export interface BaseStationsTableProps {
-  basestationToTags: BaseStationToTags,
+  basestationToTags: BaseStationToTags
   tagsLookedForByBasestations: number[]
 }
 
@@ -21,13 +27,8 @@ export const BaseStationsTable: FunctionComponent<BaseStationsTableProps> = (
       {Object.keys(basestationToTags).length <= 0 ? (
         <p className='text-center'>No base stations detected!</p>
       ) : (
-        <table className='table-striped table-hover mt-1'>
-          <thead>
-            <tr>
-              <th scope='col'>Base Station #</th>
-              <th scope='col'>Tags Not Looking For</th>
-            </tr>
-          </thead>
+        <Table>
+          <TableHeader headers={HEADERS} />
           <tbody>
             {Object.keys(basestationToTags)
               .sort(compareStringsAsNumber)
@@ -35,11 +36,14 @@ export const BaseStationsTable: FunctionComponent<BaseStationsTableProps> = (
                 <BaseStationsTableRow
                   key={baseStationNum}
                   baseStationNum={Number(baseStationNum)}
-                  searchingTags={getAMinusBItems(tagsLookedForByBasestations, basestationToTags[Number(baseStationNum)].searchingTags)}
+                  searchingTags={getAMinusBItems(
+                    tagsLookedForByBasestations,
+                    basestationToTags[Number(baseStationNum)].searchingTags,
+                  )}
                 />
               ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </>
   )

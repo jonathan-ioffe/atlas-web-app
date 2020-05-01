@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { AppName } from '../../constants/app-constants'
+import { AppName } from '../constants/app-constants'
 
 export const Navbar: FunctionComponent = () => {
   return (
