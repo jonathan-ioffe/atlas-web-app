@@ -17,7 +17,6 @@ class WebSocketConnection {
     while (!this.isConnected()) {
       await sleep(100)
     }
-    console.debug(`Sending: ${data}`)
     this._wsConnection.send(data)
   }
 
@@ -39,7 +38,6 @@ class WebSocketConnection {
 
     // websocket onopen event listener
     this._wsConnection.onopen = () => {
-      console.debug('SUCCESS connecting WebSocket')
       this.onConnectionOpen()
 
       that._timeout = 250 // reset timer to 250 on open of websocket connection
