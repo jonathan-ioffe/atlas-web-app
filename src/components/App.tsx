@@ -10,26 +10,28 @@ import {
 import { instanceOf } from 'prop-types'
 import { withCookies, Cookies, ReactCookieProps } from 'react-cookie'
 import { AtlasConnection } from '../connections/atlas-connection'
-import { MapView } from './map-view'
 import { UserAuthenticationRequest } from '../interfaces/atlas-message-structure'
 import { Feature } from 'ol'
-import { locationsByTagsToCombinedFeatureArray } from '../helpers/map-utils'
-import { BrowserView, MobileView } from 'react-device-detect'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import { Carousel } from 'react-responsive-carousel'
 import '../styles/carousel-override.css'
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css'
-import { TablesNav } from './tables/tables-nav'
 import { BaseStationToTags } from '../interfaces/base-stations-structure'
 import { LoginView } from './login-view'
 import { LoadingView } from './loading-view'
 import { determineIsLoginResponse } from '../helpers/google-api'
 import { getUserAuthFromCookies, setUserAuthToCookie } from '../helpers/cookies'
 import { TagToDetections, TagToLocations } from '../interfaces/tags-structure'
+import { MainPage } from './main-page'
+import { GraphPage } from './graph-page'
+
+export enum AvailablePages {
+  main, graph
+}
 
 export interface AppState {
   isLoggedIn: boolean
   isLoading: boolean
+  isMainPage: boolean
   atlasConnection?: AtlasConnection
   baseStationsFeatures: Feature[]
   tagsFeatures: Feature[]
@@ -50,6 +52,7 @@ class App extends Component<ReactCookieProps, AppState> {
     this.state = {
       isLoggedIn: false,
       isLoading: true,
+      isMainPage: true,
       atlasConnection: undefined,
       baseStationsCenter: [0, 0],
       baseStationsFeatures: [],
@@ -62,6 +65,8 @@ class App extends Component<ReactCookieProps, AppState> {
   }
 
   lastUpdateDate = new Date()
+  componentUpdatePending = false
+  
 
   componentDidMount() {
     const { cookies } = this.props
@@ -87,9 +92,10 @@ class App extends Component<ReactCookieProps, AppState> {
     const { isLoading } = this.state
     const now = new Date()
     var seconds = (now.getTime() - this.lastUpdateDate.getTime()) / 1000
-    return seconds >= 1 || isLoading
+    return seconds >= 1 || isLoading || this.componentUpdatePending
   }
   componentDidUpdate() {
+    this.componentUpdatePending = false
     this.lastUpdateDate = new Date()
   }
 
@@ -99,6 +105,12 @@ class App extends Component<ReactCookieProps, AppState> {
 
   getStateByKey = (key: keyof AppState) => {
     return this.state[key]
+  }
+
+  setPageView = (page: AvailablePages) => {
+    this.setState({
+      isMainPage: page === AvailablePages.main,
+    }, () => this.componentUpdatePending = true)
   }
 
   responseGoogle = (
@@ -119,75 +131,41 @@ class App extends Component<ReactCookieProps, AppState> {
     }
   }
 
-  mainPage() {
-    const {
-      baseStationsCenter,
-      baseStationsFeatures,
-      tagToLocations,
-      tagToDetections,
-      baseStationToTags,
-      tagsLookedForByBasestations,
-    } = this.state
-    return (
-      <>
-        <BrowserView>
-          <div className='row'>
-            <div className='col-4'>
-              <TablesNav
-                tagToDetections={tagToDetections}
-                baseStationToTags={baseStationToTags}
-                tagsLookedForByBasestations={tagsLookedForByBasestations}
-              />
-            </div>
-            <MapView
-              mapCenter={baseStationsCenter}
-              baseStationsFeatures={baseStationsFeatures}
-              tagsFeatures={locationsByTagsToCombinedFeatureArray(
-                tagToLocations,
-              )}
-            />
-          </div>
-        </BrowserView>
-        <MobileView>
-          <Carousel showStatus={false} showThumbs={false} dynamicHeight>
-            <div className='w-auto'>
-              <TablesNav
-                tagToDetections={tagToDetections}
-                baseStationToTags={baseStationToTags}
-                tagsLookedForByBasestations={tagsLookedForByBasestations}
-              />
-            </div>
-            <div>
-              <MapView
-                mapCenter={baseStationsCenter}
-                baseStationsFeatures={baseStationsFeatures}
-                tagsFeatures={locationsByTagsToCombinedFeatureArray(
-                  tagToLocations,
-                )}
-              />
-            </div>
-          </Carousel>
-        </MobileView>
-      </>
-    )
-  }
-
   render() {
-    const { isLoggedIn, isLoading } = this.state
+    const { isLoggedIn, isLoading, isMainPage } = this.state
+
+    const timestamps = ['2020-04-20 11:00', '2020-04-20 11:10', '2020-04-20 11:20']
+
+    const series = [
+      {
+        name: 'Base Station #1',
+        data: [30, 20, 20],
+      },
+      {
+        name: 'Base Station #2',
+        data: [90, 100, 10],
+      },
+    ]
+
     return (
-      <>
-        <Navbar />
+      <div>
+        <Navbar setPageView={this.setPageView} />
         {isLoading ? (
           <LoadingView />
-        ) : isLoggedIn ? (
-          this.mainPage()
+        ) : isLoggedIn ? (  
+          isMainPage ?
+          <MainPage {...this.state} />
+          : <GraphPage
+              timestamps={timestamps}
+              baseStationToInterruptions={series}
+           />
         ) : (
           <LoginView
             loginSuccessCallback={this.responseGoogle}
             loginFailureCallback={this.responseGoogle}
           />
         )}
-      </>
+      </div>
     )
   }
 }

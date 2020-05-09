@@ -14,3 +14,8 @@ export interface BaseStationInfo {
 export type BaseStationToTags = {
   [basestation: number]: { searchingTags: number[] }
 }
+
+export interface BaseStationToInterruptions {
+  name: string
+  data: number[]
+}
