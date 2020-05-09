@@ -59,7 +59,7 @@ export class GraphPage extends Component<GraphPageProps, GraphPageState> {
           position: 'top',
           horizontalAlign: 'right',
           floating: true,
-          offsetY: -25,
+          offsetY: -15,
           offsetX: -5,
         },
       },
