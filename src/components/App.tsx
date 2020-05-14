@@ -134,8 +134,8 @@ class App extends Component<ReactCookieProps, AppState> {
   render() {
     const { isLoggedIn, isLoading, isMainPage } = this.state
 
+    // Dummy data for POC, once the API available, should get it from the server
     const timestamps = ['2020-04-20 11:00', '2020-04-20 11:10', '2020-04-20 11:20']
-
     const series = [
       {
         name: 'Base Station #1',
